@@ -1,0 +1,47 @@
+<head>
+  <link rel="stylesheet" href="/css/server-page/clientSettings.css" />
+</head>
+
+<body>
+  <header>
+    <div class="popUpMessage-container"></div>
+    <!-- <h1>Client Settings</h1>
+    <div class="clientPrefix">
+      <h2>Client Prefix</h2>
+      <form>
+        <input type="text" placeholder="Change client prefix" required />
+      </form>
+    </div> -->
+
+    <div class="clientNickname">
+      <h2>Client nickname</h2>
+      <form id="changeNickname">
+        <input
+          id="nickname"
+          type="text"
+          placeholder="Change client nickname"
+          required
+          onfocus="this.value=''"
+        />
+      </form>
+      <form id="resetNickname">
+        <input type="submit" value="Reset Nickname" />
+      </form>
+    </div>
+
+    <!-- <div class="assignRole">
+      <h2>Assign Roles</h2>
+      <form id="roleAssignment">
+        <ul class="clientSettings-role-list" id="clientSettings-role-list"></ul>
+        <input type="submit" value="Save Changes" />
+      </form>
+    </div> -->
+
+    <div class="moderationActions">
+      <h2>Kick Client</h2>
+      <form id="kickClient">
+        <input type="submit" value="Kick" />
+      </form>
+    </div>
+  </header>
+</body>

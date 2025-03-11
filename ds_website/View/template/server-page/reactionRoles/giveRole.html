@@ -1,0 +1,73 @@
+<head>
+  <link rel="stylesheet" href="/css/server-page/reactionRoles.css" />
+</head>
+
+<header>
+  <div id="reactionRoleTableDiv">
+    <h3>Active Reaction roles</h3>
+    <table id="activeReactionRoleTable">
+      <thead>
+        <tr>
+          <th>Color</th>
+          <th>Channel</th>
+          <th>Title</th>
+          <th>Emoji</th>
+          <th>Role</th>
+          <th class="remove"></th>
+          <th class="edit"></th>
+        </tr>
+      </thead>
+
+      <tbody id="activeReactionRoleTbody"></tbody>
+    </table>
+  </div>
+
+  <div id="confirmationDIV" style="display: none" class="confirmation">
+    <form id="confirmationForm">
+      <h2>Continue with process?</h2>
+      <p>Are you sure you want to delete this reaction role?</p>
+      <input type="submit" name="response" value="Yes" />
+      <input type="submit" name="response" value="No" />
+    </form>
+  </div>
+
+  <div class="reactionRoleDiv">
+    <form id="embededMessageReactionRole">
+      <h2>Grant a role upon reaction</h2>
+      <select required name="channel" id="channel">
+        <option value="" disabled selected>Select text channel</option>
+      </select>
+      <select required name="role" id="role">
+        <option value="" disabled selected>Select a role to grant</option>
+      </select>
+      <input required name="title" type="text" placeholder="Title" />
+      <p>Hint: To add a link to a text channel use "<#channel id>"</p>
+      <textarea
+        required
+        name="message"
+        id=""
+        placeholder="enter your message here..."
+      ></textarea>
+      <input
+        required
+        type="color"
+        id="favcolor"
+        name="favcolor"
+        value="#000000"
+      />
+
+      <button name="emoji" id="emojiPickerTrigger" type="button">
+        Pick an emoji
+      </button>
+      <input required name="emoji" type="text" id="selectedEmoji" />
+
+      <div
+        style="display: none"
+        id="pickerContainer"
+        class="pickerContainer"
+      ></div>
+
+      <input type="submit" value="Create reaction role" />
+    </form>
+  </div>
+</header>

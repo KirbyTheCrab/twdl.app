@@ -1,0 +1,26 @@
+{
+  "name": "ds-website",
+  "version": "1.0.0",
+  "description": "finale year project",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Toad",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "fs-extra": "^11.3.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "passport": "^0.7.0",
+    "passport-steam": "^1.0.18",
+    "picmo": "^5.8.5",
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "@types/express-session": "^1.18.0"
+  }
+}

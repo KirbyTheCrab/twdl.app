@@ -1,0 +1,29 @@
+ul.nav-bar-ul {
+  margin: auto;
+  height: 60px;
+  display: flex;
+  background-color: #0092ca;
+  list-style: none;
+  padding: 0px;
+  align-items: center;
+}
+
+.nav-bar-ul li {
+  all: unset;
+  color: #fff;
+  display: flex;
+  align-items: center; /* Align image and text vertically */
+  margin-right: 20px;
+  transition: 0.5s ease;
+  padding: 10px;
+  border-radius: 10px;
+}
+.nav-bar-ul li:hover {
+  color: #0092ca;
+  background-color: #eeeeee;
+  transition: 0.5s;
+}
+.twdl-icon {
+  max-height: 50px; /* Adjust image size to prevent overflow */
+  margin-right: 10px;
+}

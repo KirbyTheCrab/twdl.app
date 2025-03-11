@@ -1,0 +1,84 @@
+.server-a {
+  display: block;
+  color: #fff;
+  transition: 0.5s ease;
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px;
+}
+.server-a:hover {
+  color: #0092ca;
+  background-color: #eeeeee;
+  transition: 0.5s;
+}
+
+.server-name {
+  font-size: 15px;
+}
+
+.main-content {
+  display: grid;
+  gap: 0.8%;
+  grid-template-columns: repeat(8, 1fr);
+  background-color: #222831;
+  padding: 20px;
+  border-radius: 10px;
+}
+.server-card {
+  align-items: center;
+  text-align: center;
+  border-style: solid;
+  border-radius: inherit;
+  margin-bottom: 15px;
+  transition: 0.5s ease-in-out;
+}
+.server-card:hover {
+  background-color: #0092ca;
+  color: #fff;
+  transition: 0.5s ease-in-out;
+}
+.server-icon {
+  width: 50%;
+  border-radius: 100px;
+  padding: 5px;
+}
+
+/* crown svg */
+.server-owner {
+  filter: sepia(79%) saturate(2476%) hue-rotate(20deg) brightness(500%)
+    contrast(119%);
+}
+/* server perms (owner or admin) */
+.server-perms {
+  margin: 10px;
+  display: flex;
+  width: 15%;
+}
+.dashboard-header {
+  height: 60px;
+  display: flex;
+  background-color: #0092ca;
+  list-style: none;
+  padding: 0px;
+  align-items: center;
+}
+
+.user-card {
+  margin-left: auto;
+  align-items: center;
+  display: flex;
+  float: right;
+}
+.user-icon {
+  max-height: 50px; /* Adjust image size to prevent overflow */
+  margin-right: 10px;
+  border-radius: 100px;
+}
+.user-name {
+  padding: 10px;
+  color: white;
+}
+
+.invite-bot-btn {
+  color: #0092ca;
+}

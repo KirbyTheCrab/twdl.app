@@ -1,0 +1,21 @@
+footer {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  text-align: center;
+  background-color: #0092ca;
+  list-style-type: none;
+  padding: 10px;
+}
+
+
+.footer-li {
+  all: unset;
+  color: #fff;
+  align-items: center; /* Align image and text vertically */
+  margin-right: 20px;
+  padding: 10px;
+  transition: 0.5s;
+  border-radius: 10px;
+}

@@ -1,0 +1,29 @@
+<head>
+  <link rel="stylesheet" href="/css/server-page/clientSettings.css" />
+</head>
+<body>
+  <header>
+    <h2>Change server name</h2>
+    <form id="changeGuildName">
+      <input
+        id="guildName"
+        type="text"
+        placeholder="Change guild name"
+        required
+        onfocus="this.value=''"
+      />
+    </form>
+
+    <h2>Change server icon</h2>
+    <form id="changeGuildIcon" enctype="multipart/form-data">
+      <div class="file-input-wrapper">
+        <input type="file" id="guildIcon" required class="file-input" />
+        <label for="file-upload" class="file-label">
+          <span class="file-icon">📁</span> Upload File
+        </label>
+      </div>
+
+      <input type="submit" />
+    </form>
+  </header>
+</body>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/dashboard-style.css" />
+    <link rel="stylesheet" href="/css/universal-style.css" />
+    <script type="module" src="/js/dashboard/onWindowLoad.js"></script>
+    <script type="module" src="/js/fetchNavBar.js"></script>
+  </head>
+
+  <body>
+    <header id="dashboard-header" class="dashboard-header">
+      <div id="navbar"></div>
+      <div id="user-card" class="user-card"></div>
+    </header>
+    <div id="loading-screen">
+      <p>Loading, please wait...</p>
+    </div>
+    <h2>Servers</h2>
+    <div id="main-content" class="main-content"></div>
+
+    <footer>
+      <script type="module" src="/js/fetchFooter.js"></script>
+      <div id="footer"></div>
+    </footer>
+  </body>
+</html>

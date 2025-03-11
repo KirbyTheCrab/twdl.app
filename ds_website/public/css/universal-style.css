@@ -1,0 +1,153 @@
+a {
+  text-decoration: none;
+}
+
+body {
+  margin: auto;
+  padding: 0px;
+  color: #0092ca;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #222831;
+}
+
+#loading-screen {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 900px;
+}
+
+/* div */
+.pop-up-message {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+/* paragraph */
+.pop-up-message-text {
+  padding: 10px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional shadow for depth */
+}
+.pop-up-message-text.hidden {
+  animation: slide-out 200ms;
+  position: fixed;
+  right: 5px;
+  top: -5px;
+  color: white;
+  text-align: center;
+}
+.pop-up-message-text.visible {
+  animation: slide-in 200ms;
+  position: fixed;
+  right: 5px;
+  top: -5px;
+  color: white;
+  text-align: center;
+}
+
+/* .pop-up-message > p{
+  position: fixed;
+  right: 5px;
+} */
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0.25;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+@keyframes slide-out {
+  from {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0.25;
+  }
+}
+
+input[type="text"],
+textarea {
+  background-color: #0092ca;
+  padding: 7px 15px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: white;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  background-color: white;
+}
+input[type="submit"] {
+  background-color: #0092ca;
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  margin: 4px 2px;
+}
+
+.file-input-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.file-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background: #0092ca;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.file-label:hover {
+  background: #0056b3;
+}
+
+.file-icon {
+  font-size: 18px;
+}

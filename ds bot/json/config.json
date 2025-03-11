@@ -1,0 +1,30 @@
+{
+    "client":{
+        "prefix":"!"
+    },
+    "guild":{
+        "id_main": "691685252623499374",
+        "id_test": "947223336130342962",
+        "spotfiy_text_channel_id_test":"1089887479013843014",
+        "spotfiy_text_channel_id_main":"1076264269471039638",
+        "webhook":"https://discord.com/api/webhooks/1090011627711119482/K9-UG8jx74YMmJXkvfG2IG229sQ53NNq2IQ7lP7lvna06fFjEVo8KlZQEvF9OlcH9o06",
+        "rainbowRoleId_main": "1180512882274869270",
+        "rainbowRoleId_test": "947223336159698986"
+    },
+    "SpotifyAPI":{
+        "id":"feb4360dcd1c48bc8399c0fea32e6a99",
+        "secret":"53ea2e4bf492440ba654499b1993efda",
+        "playlistId_test":"6WZvuHMzr7U1MBXgZX9ycE"
+    },
+    "Buddies":{
+        "David":"378172126416470026",
+        "Matthew":"217960750872788993",
+        "Scotty":"117306928018882563",
+        "Soup":"579195024995123211",
+        "Bent":"465211092910473217",
+        "Lumberjack":"237052875979751425"
+    },
+    "filepath":{
+        "spotfiyQueCount":"./spotifyQueCount.txt"
+    }
+}
