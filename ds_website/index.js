@@ -45,9 +45,13 @@ app.use(
     secret: process.env.SESSION_SECRET || "default-secret",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: process.env.NODE_ENV === "production" }, // Use secure cookies in production
+    cookie: { secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax"
+     }, // Use secure cookies in production
   })
 );
+app.set("trust proxy", 1); // Required for secure cookies behind a proxy
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Middleware for form data (but not files)
 //discord-data route
@@ -113,7 +117,7 @@ app.get(`/server/:serverId`, isAuthenticated, (req, res) => {
 // });
 
 app.listen(port, async () => {
-  console.log(`App listening at http://localhost:${port}`);
+  console.log(`Apps listening at http://localhost:${port}`);
 });
 
 function createSteamStrategy(serverId) {
