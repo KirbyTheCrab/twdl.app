@@ -23,16 +23,16 @@ import discordRoute_POST from "./Routes/post/discordRouter.js";
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 53134;
+const port = process.env.PORT;
 const steamAPIKey = process.env.SteamAPIKey;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const db_connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+// const db_connection = mysql.createConnection({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+// });
 
 multer({ dest: "uploads/" });
 
@@ -42,16 +42,11 @@ app.use(express.static(join(__dirname, "src")));
 app.use("/template", express.static(join(__dirname, "View/template")));
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "default-secret",
-    resave: false,
+    secret: process.env.SESSION_SECRET,
+    resave: true,
     saveUninitialized: true,
-    cookie: { secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      sameSite: "lax"
-     }, // Use secure cookies in production
   })
 );
-app.set("trust proxy", 1); // Required for secure cookies behind a proxy
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Middleware for form data (but not files)
 //discord-data route
@@ -67,8 +62,30 @@ app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "View/index.html"));
 });
 
-app.get("/auth/discord", (req, res) => {
+app.get("/auth/discord", async (req, res) => {
   req.session.isLoggedIn = true;
+
+  const data = new URLSearchParams({
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    grant_type: "authorization_code",
+    code: req.query.code,
+    redirect_uri: "http://localhost:53134/auth/discord",
+  });
+
+  const response = await fetch("https://discord.com/api/oauth2/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: data,
+  });
+  const json = await response.json();
+  if (!json.access_token) {
+    return res.status(400).send("Failed to retrieve access token.");
+  }
+  req.session.accessToken = json.access_token;
+  req.session.tokenType = json.token_type;
+  req.session.isLoggedIn = true;
+
   return res.redirect("/dashboard");
 });
 

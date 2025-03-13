@@ -8,16 +8,18 @@ const user = new User();
 const serverData = new ServerData();
 
 const pageLoading = async () => {
-  const fragment = new URLSearchParams(window.location.hash.slice(1));
-  const [accessToken, tokenType] = [
-    fragment.get("access_token"),
-    fragment.get("token_type"),
-  ];
-  await setAccessToken(accessToken);
+  const [accessTokenRes, tokenTypeRes] = await Promise.all([
+    fetch("/session/accessToken").then((res) => res.json()),
+    fetch("/session/tokenType").then((res) => res.json()),
+  ]);
+
+  const accessToken = accessTokenRes.accessToken;
+  const tokenType = tokenTypeRes.tokenType;
   if (!accessToken || !tokenType) {
     window.location.href = "/";
-  } else {
   }
+  await setAccessToken(accessToken);
+
   //must fetch user data before server data
   try {
     const isUserDataFetchedLocal = await getIsUserDataFetched();

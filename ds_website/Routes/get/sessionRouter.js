@@ -10,6 +10,10 @@ sessionRoute_GET
   })
   .get("/accessToken", (request, response) => {
     response.json({ accessToken: request.session.accessToken || false });
+  })
+
+  .get("/tokenType", (request, response) => {
+    response.json({ tokenType: request.session.tokenType } || false);
   });
 
 export default sessionRoute_GET;
