@@ -26,7 +26,9 @@ export default class ServerData {
         mainContent.appendChild(serverCard)
       );
     } catch (error) {
-      console.error("Something went wrong trying to create server cards");
+      console.error(
+        "Something went wrong trying to create server cards " + error
+      );
     }
   }
 
@@ -63,7 +65,7 @@ export default class ServerData {
     // If the user has permissions and the bot is in the server
     if (clientServerList.includes(serverData.id) && (isMod || isOwner)) {
       serverCard.style.order = "1";
-      serverAnchor.href = `/server/${serverData.id}?isMod=true`;
+      serverAnchor.href = `/server/${serverData.id}`;
       serverAnchor.textContent = "Configure";
       serverAnchor.classList.add("server-a");
       return serverAnchor;
@@ -77,11 +79,18 @@ export default class ServerData {
       serverAnchor.classList.add("server-a");
       return serverAnchor;
     } else {
-      serverAnchor.href = `/server/${serverData.id}?isMod=false`;
+      serverAnchor.href = `/server/${serverData.id}`;
+
       //if server has cs2, r6 or wow enabled enable certain view ?isMod=false
-      serverCard.style.pointerEvents = "none";
-      serverCard.style.order = "3";
-      serverCard.style.opacity = 0.2;
+      const res = await this.getServerApisEnabled(serverData.id);
+      console.log(res);
+      if (res.cs2Tracker || res.r6Tracker || res.wowTracker) {
+        serverAnchor.textContent = "View";
+      } else {
+        serverCard.style.pointerEvents = "none";
+        serverCard.style.order = "3";
+        serverCard.style.opacity = 0.2;
+      }
       serverAnchor.classList.add("server-a");
       return serverAnchor;
     }
@@ -124,5 +133,23 @@ export default class ServerData {
 
   getListOfServerIds() {
     return this.listOfServerIds;
+  }
+
+  async getServerApisEnabled(guildID) {
+    const fetchTrackerStatus = async (gameTracker) => {
+      const res = await fetch(`/discord-data/guild/tracker/isEnabled`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gameTracker, guildID }),
+      });
+      const data = await res.json();
+      return data.isEnabled;
+    };
+
+    const cs2Tracker = await fetchTrackerStatus("cs2Tracker");
+    const r6Tracker = await fetchTrackerStatus("r6Tracker");
+    const wowTracker = await fetchTrackerStatus("wowTracker");
+
+    return { cs2Tracker, r6Tracker, wowTracker };
   }
 }

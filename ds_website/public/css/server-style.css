@@ -8,6 +8,81 @@ li {
   display: flex;
 }
 
+/* Top Header */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #323544;
+  width: 80%;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.data-list {
+  display: flex;
+  gap: 20px;
+  width: 80%;
+  justify-content: center;
+  margin: 20px 0;
+  list-style: none;
+  overflow-y: scroll;
+  height: 90%;
+  overflow: hidden;
+}
+.guild-data-list {
+  background: #2b2b3c;
+  padding: 15px;
+  border-radius: 10px;
+  width: 45%;
+  /* border: #0092ca solid 2px; */
+  list-style: none;
+  overflow-y: auto; /* "auto" will show scroll only when needed */
+  overflow-x: hidden;
+  float: right;
+  height: 300px;
+}
+
+.user-list-li:hover {
+  background-color: white;
+  color: #0092ca;
+  transition: 0.2s ease-in;
+}
+.role-list-li:hover {
+  border: 2px solid white;
+}
+.server-data-list-header {
+  padding: 5px;
+  position: sticky;
+  top: -15;
+  background-color: #222831;
+  border-radius: 10px;
+  width: 100%;
+}
+.server-icon {
+  border-radius: 10px;
+}
+
+.user-list-li,
+.role-list-li {
+  font-size: 15px;
+  padding: 5px;
+  margin: 5px;
+  border: 2px solid #0092ca;
+  border-radius: 10px;
+  transition: 0.2s ease-in;
+}
+
+.api-list {
+  border: 2px solid #0092ca;
+  border-radius: 10px;
+  color: white;
+  margin: 10px;
+  list-style: none;
+  padding: 10px;
+}
+
 .api-list li {
   display: inline;
   padding: 10px;
@@ -20,24 +95,18 @@ li {
   background-color: white;
   transition: 0.2 ease-in;
 }
+
 .client-configuration-container {
-  display: flex;
-  width: 85%;
+  width: 25%; /* Adjust width to make space for dynamic content */
+  min-width: 200px; /* Ensures it doesn't get too small */
 }
 .client-configuration {
   border: 2px solid #0092ca;
   border-radius: 10px;
-  display: 15%;
   color: white;
   margin: 10px;
   list-style: none;
   padding: 10px;
-}
-.dynamic-page {
-  margin: 10px;
-  display: flex;
-  float: right;
-  width: 85%;
 }
 
 .client-configuration li {
@@ -53,82 +122,25 @@ li {
   background-color: white;
   transition: 0.2 ease-in;
 }
-.server-stats {
-  color: white;
-  background-color: #0092ca;
+
+.dynamic-page {
+  background: #2b2b3c;
+  padding: 20px;
   border-radius: 10px;
-  margin: 10px;
-  width: 12%;
-}
-.server-stats img {
-  margin: 10px;
-  border-radius: 50px;
-}
-.server-stats p {
-  margin: 10px;
-}
-.main-content {
-  width: 100%;
-  background-color: white;
-  border-radius: 10px;
-  margin: 10px;
-}
-.data-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  float: right;
-  width: 15%;
-  list-style: none;
-  overflow-y: scroll;
-  height: 90%;
-  overflow: hidden;
-}
-.guild-data-list {
   border: #0092ca solid 2px;
-  list-style: none;
-  overflow-y: scroll;
-  float: right;
-  height: 100%;
-  width: 88%;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.search-bar {
-  margin: 5px;
-  border-radius: 5px;
-}
-
-.server-icon {
-  width: 25%;
-  border-radius: 100px;
-}
-
-.user-list-li,
-.role-list-li {
-  font-size: 15px;
-  padding: 5px;
-  margin: 5px;
-  border: 2px solid #0092ca;
-  border-radius: 10px;
-  transition: 0.2s ease-in;
-}
-.user-action-btn {
-  margin: 5px;
-  width: 8%;
-}
-.user-list-li:hover {
-  background-color: white;
-  color: #0092ca;
-  transition: 0.2s ease-in;
-}
-.role-list-li:hover {
-  border: 2px solid white;
-}
-.server-data-list-header {
-  position: sticky;
-  top: -11;
-  background-color: #222831;
+  height: auto;
+  min-height: 300px;
   width: 100%;
+}
+.dynamic-page > header {
+  width: 95%;
+}
+
+.admin-dynamic-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 80%;
+  margin-top: 20px;
+  margin-bottom: 200px;
 }

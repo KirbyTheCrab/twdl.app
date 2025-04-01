@@ -10,9 +10,12 @@ import getRoleInfo from "../../Controller/get/discord/get-role-info.js";
 import getTextChannels from "../../Controller/get/discord/get-text-channels.js";
 import getServerRoles from "../../Controller/get/discord/get-server-roles.js";
 import disableWelcomeMsg from "../../Controller/post/client/disableWelcomeMsg.js";
-import isEnabled from "../../Controller/post/client/r6Tracker/isEnabled.js";
 import isUserRegistered from "../../Controller/post/client/r6Tracker/isUserRegistered.js";
 import r6TrackerAPIConn from "../../Controller/post/client/r6Tracker/r6TrackerApiCon.js";
+import getSteamUserInventory from "../../Controller/get/steam/get-inventory.js";
+import isTradeLinkConfigured from "../../Controller/post/client/steamAPI/isTradeLinkConfigured.js";
+import isShareWithFriendsConfigured from "../../Controller/post/client/steamAPI/isShareWithFriendsConfigured.js";
+import isCs2ItemSharingConfigured from "../../Controller/post/client/steamAPI/isCs2ItemSharingConfigured.js";
 const discordRoute_GET = express.Router();
 
 discordRoute_GET
@@ -31,9 +34,19 @@ discordRoute_GET
   .get("/guild/roles", getServerRoles)
   .get("/guild/disableWelcomeMsg", disableWelcomeMsg)
 
-  //R6 Tracker Network
-  .get("/guild/r6Tracker/isEnabled", isEnabled)
-  .get("/r6Tracker/isUserRegistered", isUserRegistered)
-  .get("/r6Tracker/apiConn", r6TrackerAPIConn);
+  //Tracker Network
+
+  .get("/guild/tracker/isUserRegistered", isUserRegistered)
+  .get("/r6Tracker/apiConn", r6TrackerAPIConn)
+  .get("/api/steam/inventory", getSteamUserInventory)
+  .get("/guild/tracker/steam/isTradeLinkConfigured", isTradeLinkConfigured)
+  .get(
+    "/guild/tracker/steam/isShareWithFriendsConfigured",
+    isShareWithFriendsConfigured
+  )
+  .get(
+    "/guild/tracker/steam/isCs2ItemSharingConfigured",
+    isCs2ItemSharingConfigured
+  );
 
 export default discordRoute_GET;

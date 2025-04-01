@@ -1,0 +1,81 @@
+<head>
+  <link rel="stylesheet" href="/css/server-page/cs2-style.css" />
+</head>
+
+<div style="display: none" id="loading-screen">
+  <p>Loading, please wait...</p>
+</div>
+
+<header id="enableTrackerDiv" style="display: none">
+  <h2>CS2 Tracker</h2>
+  <div>
+    <label class="switch">
+      <input id="enableTracker" type="checkbox" />
+      <span class="slider round"></span>
+    </label>
+    <div id="furtherSettings" style="display: none">
+      
+      <form id="profileSharingChannel">
+        <h3>CS2 Profile Sharing Channel</h3>
+        <select required name="channelID" id="channel">
+          <option value="" disabled selected>Select text channel</option>
+        </select>
+        <input id="profileSetChannelBtn" type="submit" value="Set Channel" />
+      </form>
+
+      <form id="tradeLinkSharingChannel">
+        <h3>CS2 Trade Link Sharing Channel</h3>
+        <select required class="tradeLinkChannel" name="channelID" id="channel">
+          <option value="" disabled selected>Select text channel</option>
+        </select>
+        <input id="tradeLinkChannelBtn" type="submit" value="Set Channel" />
+      </form>
+
+      <form id="cs2ItemSharingChannel">
+        <h3>CS2 Item Sharing Channel</h3>
+        <select required class="itemShareChannel" name="channelID" id="channel">
+          <option value="" disabled selected>Select text channel</option>
+        </select>
+        <input id="cs2ItemChannelBtn" type="submit" value="Set Channel" />
+      </form>
+
+    </div>
+  </div>
+</header>
+
+<header id="initTrackerDiv" style="display: none">
+  <div>
+    <h2>Counter Strike 2 Login</h2>
+    <form id="apiAuth" method="GET">
+      <input
+        type="image"
+        src="https://community.fastly.steamstatic.com/public/images/signinthroughsteam/sits_01.png"
+      />
+    </form>
+  </div>
+</header>
+<div style="display: none" id="main">
+  <img id="profile" src="" alt="" />
+  <h2 id="name"></h2>
+
+  <form id="shareWithFriends">
+    <input type="text" id="shareLink" />
+    <input type="submit" value="Share Steam Profile in Discord" />
+  </form>
+
+  <div id="shareTradeLinkDiv">
+    <form id="shareTradeLink">
+      <input type="text" id="tradeLink" required />
+      <input type="submit" value="Share Trade Link" />
+    </form>
+  </div>
+
+  <h3>CS2 Inventory</h3>
+  <select id="filter-cs2-items">
+    <option value="" disabled selected>Filter Items</option>
+    <option value="Rarity">Rarity</option>
+    <option value="name">Name</option>
+    <option value="Type">Type</option>
+  </select>
+  <div class="inventory" id="inventory"></div>
+</div>

@@ -4,10 +4,10 @@ import session from "express-session";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import dotenv from "dotenv";
-import mysql from "mysql";
+// import mysql from "mysql";
 import multer from "multer";
-import passport from "passport";
-import SteamStrategy from "passport-steam";
+import passport from "./config/passport.js";
+import steamAuthRoutes from "./Routes/steamAuth.js";
 /**
  * Routes
  * GET routes
@@ -24,7 +24,7 @@ import discordRoute_POST from "./Routes/post/discordRouter.js";
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
-const steamAPIKey = process.env.SteamAPIKey;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 // const db_connection = mysql.createConnection({
@@ -48,7 +48,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Middleware for form data (but not files)
+app.use(express.urlencoded({ extended: true }));
 //discord-data route
 app.use("/discord-data", discordRoute_GET);
 app.use("/discord-data", discordRoute_POST);
@@ -57,6 +57,11 @@ app.use("/discord-data", discordRoute_POST);
 app.use("/session", sessionRoute_GET);
 app.use("/session", sessionRoute_POST);
 
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(steamAuthRoutes);
+
+//App Get
 app.get("/", (req, res) => {
   req.session.isLoggedIn = false;
   res.sendFile(join(__dirname, "View/index.html"));
@@ -135,33 +140,4 @@ app.get(`/server/:serverId`, isAuthenticated, (req, res) => {
 
 app.listen(port, async () => {
   console.log(`Apps listening at http://localhost:${port}`);
-});
-
-function createSteamStrategy(serverId) {
-  return new SteamStrategy(
-    {
-      returnURL: `https://twdl.app/server/${serverId}/auth/steam/return`,
-      realm: `https://twdl.app/server/${serverId}/auth/steam`,
-      apiKey: steamAPIKey,
-    },
-    function (identifier, profile, done) {
-      User.findByOpenID({ openId: identifier }, function (err, user) {
-        console.log(user);
-        return done(err, user);
-      });
-    }
-  );
-}
-
-app.get("/server/:serverId/auth/steam", (req, res, next) => {
-  passport.use(createSteamStrategy(req.params.serverId)); // Override strategy
-  passport.authenticate("steam")(req, res, next);
-});
-
-app.get("/server/:serverId/auth/steam/return", (req, res, next) => {
-  passport.authenticate("steam", {
-    failureRedirect: `/server/${req.params.serverId}/`,
-  })(req, res, () => {
-    res.redirect(`/server/${req.params.serverId}/`);
-  });
 });

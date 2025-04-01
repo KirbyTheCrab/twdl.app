@@ -41,8 +41,9 @@ export async function getRoles() {
 
 export async function populateChannelSelect() {
   const channels = await getTextChannels();
-  const channelSelection = document.getElementById("channel");
-  if (channelSelection) {
+  // const channelSelection = document.getElementById("channel");
+  const channelSelections = document.querySelectorAll('[id="channel"]');
+  channelSelections.forEach((channelSelection) => {
     const channelsData = channels.textChannels;
     for (let i = 0; i < channelsData.length; i++) {
       if (channelsData[i].type == "0") {
@@ -53,6 +54,7 @@ export async function populateChannelSelect() {
         channelSelection.append(channelOption);
       }
     }
-  }
+  });
+
   return channels;
 }

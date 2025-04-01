@@ -20,10 +20,10 @@ export default class User {
         this.discriminator = discriminator;
         this.userAvatar = avatar;
 
-        await fetch("/session/setUserId", {
+        await fetch("/session/saveToSession", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: id }),
+          body: JSON.stringify({ key: "userId", value: id }),
         });
 
         //create paragraph and assign user name

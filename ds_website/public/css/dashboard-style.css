@@ -61,10 +61,11 @@
   list-style: none;
   padding: 0px;
   align-items: center;
+  border-radius: 10px;
 }
 
 .user-card {
-  margin-left: auto;
+  margin-left: 50px;
   align-items: center;
   display: flex;
   float: right;

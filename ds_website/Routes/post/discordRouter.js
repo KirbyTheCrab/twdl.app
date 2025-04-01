@@ -10,8 +10,14 @@ import getDataFromJsonFiles from "../../Controller/post/client/getDataFromJsonFi
 import isUserRegistered from "../../Controller/post/client/r6Tracker/isUserRegistered.js";
 import saveUser from "../../Controller/post/client/r6Tracker/saveUser.js";
 import r6Init from "../../Controller/post/client/r6Tracker/init.js";
-import cs2Init from "../../Controller/post/client/steamAPI/init.js";
 import removeDiscordMessage from "../../Controller/post/client/removeDiscordMessage.js";
+import shareWithFriends from "../../Controller/post/client/steamAPI/shareWithFriends.js";
+import shareTradeLink from "../../Controller/post/client/steamAPI/shareTradeLink.js";
+import isEnabled from "../../Controller/post/client/r6Tracker/isEnabled.js";
+import shareWithFriendsConfig from "../../Controller/post/client/steamAPI/shareWithFriendsConfig.js";
+import shareTradeLinkConfig from "../../Controller/post/client/steamAPI/shareTradeLinkConfig.js";
+import shareItem from "../../Controller/post/client/steamAPI/shareItem.js";
+import steamSharingConfiguration from "../../Controller/post/client/steamAPI/steamSharingConfiguration.js";
 import multer from "multer";
 
 const upload = multer({ dest: "uploads/" });
@@ -29,12 +35,16 @@ discordRoute_POST
   .post("/getDataFromJsonFiles", getDataFromJsonFiles)
   .post("/deleteDiscordMessage", removeDiscordMessage)
 
-  //R6 Tracker Network
-  .post("/r6Tracker/initR6Tracker", r6Init)
-  .post("/r6Tracker/isUserRegistered", isUserRegistered)
-  .post("/r6Tracker/saveUser", saveUser)
+  //Tracker Network
+  .post("/tracker/initTracker", r6Init)
+  .post("/tracker/isUserRegistered", isUserRegistered)
+  .post("/tracker/saveUser", saveUser)
+  .post("/tracker/steam/share", shareWithFriends)
+  .post("/tracker/steam/tradeLink", shareTradeLink)
+  .post("/guild/tracker/isEnabled", isEnabled)
+  .post("/tracker/steam/shareItem", shareItem)
 
-  //CS2 Tracker
-  .post("/cs2Tracker/init", cs2Init);
+  
+  .post("/tracker/steam/steamSharingConfiguration", steamSharingConfiguration)
 
 export default discordRoute_POST;

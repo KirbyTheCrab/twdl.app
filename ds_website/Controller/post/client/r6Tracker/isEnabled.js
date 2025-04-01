@@ -4,13 +4,12 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 
 export default async function isEnabled(request, response) {
-  const guildID = request.session.serverPageId;
-  const { str } = request.query;
+  const { gameTracker, guildID } = request.body;
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
   const filePath = path.join(
     __dirname,
-    `../../../../Model/${str}/${guildID}.json`
+    `../../../../Model/${gameTracker}/${guildID}.json`
   );
   try {
     if (fs.existsSync(filePath)) {

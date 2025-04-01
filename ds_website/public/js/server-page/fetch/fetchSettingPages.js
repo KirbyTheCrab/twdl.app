@@ -2,7 +2,6 @@ import ClientSettings from "../clientSettings/clientSettings.js";
 import GuildSettings from "../guildSettings/guildSettings.js";
 import ReactionRoles from "../reaction-role/reaction-role.js";
 import WelcomeMessage from "../welcomeMessage/welcomeMessage.js";
-import r6Tracker from "../r6TrackerApi/r6Tracker.js";
 import Cs2Api from "../cs2Api/cs2Api.js";
 export default class FetchSettingPages {
   constructor() {
@@ -48,11 +47,14 @@ export default class FetchSettingPages {
     }
   }
 
-  initialiseEventListeners(serverInfoPage) {
-    //Reaction Roles
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const isMod = urlParams.get("isMod");
+  async initialiseEventListeners(serverInfoPage) {
+    const isMod = await fetch("/session/isMod")
+      .then((res) => res.json())
+      .then((data) => data.isMod);
+
+    if (!isMod) {
+      document.getElementById("adminPanel").remove();
+    }
     if (isMod) {
       this.reactionRoles.addEventListener("click", async () => {
         await this.loadHtmlTemplate("/server-page/reactionRoles.html");
@@ -86,28 +88,27 @@ export default class FetchSettingPages {
         this.loadScriptOnce("/js/server-page/clientSettings/clientSettings.js");
       });
 
-      //R6 API
-      this.r6api.addEventListener("click", async () => {
-        // await this.loadHtmlTemplate("/server-page/r6api.html");
-        // new r6Tracker();
-      });
-
-      //WOW API
-      this.wowapi.addEventListener("click", async () => {
-        await this.loadHtmlTemplate("/server-page/wowapi.html");
-      });
-
-      //CS2 API
-      this.cs2api.addEventListener("click", async () => {
-        await this.loadHtmlTemplate("/server-page/cs2api.html");
-        new Cs2Api();
-      });
-
       //Welcome Message
       this.welcomeMessage.addEventListener("click", async () => {
         await this.loadHtmlTemplate("/server-page/welcomeMessage.html");
         new WelcomeMessage();
       });
     }
+    //R6 API
+    this.r6api.addEventListener("click", async () => {
+      // await this.loadHtmlTemplate("/server-page/r6api.html");
+      // new r6Tracker();
+    });
+
+    //WOW API
+    this.wowapi.addEventListener("click", async () => {
+      await this.loadHtmlTemplate("/server-page/wowapi.html");
+    });
+
+    //CS2 API
+    this.cs2api.addEventListener("click", async () => {
+      await this.loadHtmlTemplate("/server-page/cs2/cs2api.html");
+      new Cs2Api();
+    });
   }
 }

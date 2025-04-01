@@ -7,6 +7,7 @@ export default async function isUserMod(request, response) {
     const member = await guild.members.fetch(userId);
     // Check if the user has Administrator permissions
     const isMod = member.permissions.has("Administrator");
+    request.session.isMod = isMod;
     return response.json({ isMod });
   } catch (error) {
     if (error.code === 10004) {

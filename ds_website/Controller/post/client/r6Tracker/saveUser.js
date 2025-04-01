@@ -3,14 +3,14 @@ export default async function saveUser(request, response) {
   const guildID = request.session.serverPageId;
   const userId = request.session.userId;
   const { platform, username } = request.body;
-
+  const { gameTracker } = request.query;
   try {
     const data = {
       discordUserId: userId,
       platform,
       username,
     };
-    await saveToFile(data, `/r6Tracker/${guildID}.json`);
+    await saveToFile(data, `/${gameTracker}/${guildID}.json`);
     return response.json({ message: "User saved!" });
   } catch (error) {
     console.log(error);

@@ -10,7 +10,7 @@ import { fileURLToPath } from "url";
  */
 export default async function r6Init(request, response) {
   const guildID = request.session.serverPageId;
-
+  const { gameTracker } = request.query;
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 
@@ -18,7 +18,7 @@ export default async function r6Init(request, response) {
   try {
     filePath = path.join(
       __dirname,
-      `../../../../Model/r6Tracker/${guildID}.json`
+      `../../../../Model/${gameTracker}/${guildID}.json`
     );
   } catch (error) {
     console.log("This guild does not have any saved reaction roles");
@@ -28,7 +28,7 @@ export default async function r6Init(request, response) {
   try {
     await fs.writeJson(filePath, []);
     await fs.createFile(filePath);
-    return response.json({ message: "R6 Tracker initialised" });
+    return response.json({ message: "Tracker initialised" });
   } catch (error) {
     return response.json({ error: `Something went wrong ${error}` });
   }

@@ -1,4 +1,4 @@
-import { createPicker } from "https://unpkg.com/picmo@^5.0.1?module";
+import { createPicker } from "https://cdn.jsdelivr.net/npm/picmo@latest/+esm";
 import PopUpMessage from "../../popUpMessageFactory.js";
 import {
   showEmojiPicker,

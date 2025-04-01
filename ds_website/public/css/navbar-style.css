@@ -1,18 +1,20 @@
 ul.nav-bar-ul {
-  margin: auto;
+  width: 100%;
+  background: #282c36;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   height: 60px;
   display: flex;
   background-color: #0092ca;
   list-style: none;
-  padding: 0px;
   align-items: center;
+  border-radius: 10px;
 }
 
 .nav-bar-ul li {
   all: unset;
   color: #fff;
   display: flex;
-  align-items: center; /* Align image and text vertically */
+  align-items: center;
   margin-right: 20px;
   transition: 0.5s ease;
   padding: 10px;
@@ -24,6 +26,6 @@ ul.nav-bar-ul {
   transition: 0.5s;
 }
 .twdl-icon {
-  max-height: 50px; /* Adjust image size to prevent overflow */
+  max-height: 50px;
   margin-right: 10px;
 }

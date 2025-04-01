@@ -7,16 +7,10 @@ sessionRoute_POST
     response.json({ message: "Data fetched state updated" });
   })
 
-  .post("/setAccessToken", (request, response) => {
-    const { accessToken } = request.body;
-    request.session.accessToken = accessToken;
-    return response.json({ message: "Access token was set" });
-  })
-
-  .post("/setUserId", (request, response) => {
-    const { userId } = request.body;
-    request.session.userId = userId;
-    return response.json({ message: "User ID was set" });
+  .post("/saveToSession", (request, response) => {
+    const { key, value } = request.body;
+    request.session[key] = value;
+    return response.json({ message: "Variable saved to session" });
   });
 
 export default sessionRoute_POST;
