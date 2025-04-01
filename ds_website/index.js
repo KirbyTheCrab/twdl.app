@@ -75,7 +75,7 @@ app.get("/auth/discord", async (req, res) => {
     client_secret: process.env.CLIENT_SECRET,
     grant_type: "authorization_code",
     code: req.query.code,
-    redirect_uri: "http://localhost:53134/auth/discord",
+    redirect_uri: "https://twdl.app/auth/discord",
   });
 
   const response = await fetch("https://discord.com/api/oauth2/token", {
