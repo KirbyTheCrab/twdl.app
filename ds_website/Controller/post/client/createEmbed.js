@@ -7,6 +7,20 @@ export default async function createEmbedReaction(request, response) {
   const { channel, title, message, favcolor, emoji, role } = request.body;
   const textChannel = await client.channels.fetch(channel);
   try {
+
+    const server = await client.guilds.fetch(guildID);
+    const roleData = server.roles.cache.get(role);
+    const botMember = server.members.me;
+
+    if (!role || !botMember) {
+      return response.json({ error: "Role or bot member not found" })
+    }
+
+    if (roleData.position >= botMember.roles.highest.position) {
+      return response.json({ error: `Cannot assign role because it is higher or equal to the bot's highest role.\n Consider moving the bot's role "TWDL" above all!` })
+    }
+
+
     const embedBuilder = new EmbedBuilder()
       .setColor(favcolor)
       .setTitle(title)

@@ -30,7 +30,6 @@ export default class GuildSettings {
       .getElementById("changeGuildIcon")
       .addEventListener("submit", async function (event) {
         event.preventDefault();
-        console.log("Form submitted!");
         const guildIcon = document.getElementById("guildIcon").files[0];
         const formData = new FormData();
         formData.append("image", guildIcon);

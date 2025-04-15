@@ -61,15 +61,13 @@ export default class WelcomeMessage {
         const channelMap = Object.fromEntries(
           this.channels.textChannels.map((c) => [c.id, c.name])
         );
-        console.log(message);
-
         ["color", "channelID", "title", "message"].forEach((key) => {
           const cell = document.createElement("td");
           key === "channelID"
             ? (cell.textContent = channelMap[message[key]] || "Unknown Channel")
             : key === "color"
-            ? (cell.style.backgroundColor = `${message[key]}`)
-            : (cell.textContent = message[key]);
+              ? (cell.style.backgroundColor = `${message[key]}`)
+              : (cell.textContent = message[key]);
 
           dataRow.appendChild(cell);
         });
