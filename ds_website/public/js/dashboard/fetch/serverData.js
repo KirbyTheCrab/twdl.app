@@ -83,12 +83,12 @@ export default class ServerData {
 
       //if server has cs2, r6 or wow enabled enable certain view ?isMod=false
       const res = await this.getServerApisEnabled(serverData.id);
-      console.log(res);
       if (res.cs2Tracker || res.r6Tracker || res.wowTracker) {
         serverAnchor.textContent = "View";
+        serverCard.style.order = "3";
       } else {
         serverCard.style.pointerEvents = "none";
-        serverCard.style.order = "3";
+        serverCard.style.order = "4";
         serverCard.style.opacity = 0.2;
       }
       serverAnchor.classList.add("server-a");

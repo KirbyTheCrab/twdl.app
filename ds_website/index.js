@@ -8,6 +8,8 @@ import dotenv from "dotenv";
 import multer from "multer";
 import passport from "./config/passport.js";
 import steamAuthRoutes from "./Routes/steamAuth.js";
+import helmet from "helmet";
+
 /**
  * Routes
  * GET routes
@@ -35,6 +37,31 @@ const __dirname = dirname(__filename);
 // });
 
 multer({ dest: "uploads/" });
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https://cdn.discordapp.com/", "https://steamstatic.com/", "https://community.fastly.steamstatic.com/", "https://avatars.steamstatic.com/", "https://steamcommunity-a.akamaihd.net/"],
+      connectSrc: ["'self'", "https://discord.com/api/", "https://api.steampowered.com/", "https://steamcommunity.com/", "https://cdn.jsdelivr.net"],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      frameAncestors: ["'none'"],
+    },
+  })
+);
+
+app.use(helmet.hsts({
+  maxAge: 31536000,
+  includeSubDomains: true,
+  preload: true,
+}));
+
+app.use(helmet.frameguard({ action: 'deny' }));
+app.use(helmet.noSniff());
+app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
+
+
 
 app.use("/Model", express.static(join(__dirname, "Model/")));
 app.use(express.static(join(__dirname, "public")));
@@ -44,7 +71,7 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: true
   })
 );
 app.use(express.json());
@@ -75,7 +102,7 @@ app.get("/auth/discord", async (req, res) => {
     client_secret: process.env.CLIENT_SECRET,
     grant_type: "authorization_code",
     code: req.query.code,
-    redirect_uri: "http://localhost:53134/auth/discord",
+    redirect_uri: "https://twdl.app/auth/discord",
   });
 
   const response = await fetch("https://discord.com/api/oauth2/token", {

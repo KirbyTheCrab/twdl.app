@@ -297,6 +297,7 @@ export default class Cs2Api {
             response.message || response.error,
             response.message ? "ok" : "error"
           );
+          location.reload();
         });
     });
   }

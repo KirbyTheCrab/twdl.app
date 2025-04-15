@@ -28,7 +28,7 @@ li {
   margin: 20px 0;
   list-style: none;
   overflow-y: scroll;
-  height: 90%;
+  height: 50%;
   overflow: hidden;
 }
 .guild-data-list {
@@ -61,6 +61,7 @@ li {
   width: 100%;
 }
 .server-icon {
+  width: 150px;
   border-radius: 10px;
 }
 
