@@ -9,8 +9,8 @@ export function createSteamStrategy(serverId) {
       `steam-${serverId}`,
       new SteamStrategy(
         {
-          returnURL: `http://localhost:53134/server/${serverId}/auth/steam/return`,
-          realm: `http://localhost:53134`,
+          returnURL: `https://twdl.app/server/${serverId}/auth/steam/return`,
+          realm: `https://twdl.app`,
           apiKey: process.env.SteamAPIKey,
         },
         function (identifier, profile, done, err) {

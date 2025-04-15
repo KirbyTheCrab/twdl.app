@@ -3,29 +3,35 @@
 </head>
 <nav>
   <ul class="nav-bar-ul" id="nav-bar-ul">
-    <img
-      id="twdl-icon"
-      class="twdl-icon"
-      src="/img/twdl-icon-noBackground.png"
-    />
+    <img id="twdl-icon" class="twdl-icon" src="/img/twdl-icon-noBackground.png" />
 
-    <a href="" style="display: none" id="dashboard"><li>Dashboard</li></a>
+    <a href="" style="display: none" id="dashboard">
+      <li>Dashboard</li>
+    </a>
+
+    <a href="https://discord.com/oauth2/authorize?client_id=1089904140685164686&scope=bot&permissions=1099511627775">
+      <li>Invite</li>
+    </a>
+
+    <a href="/status">
+      <li>Status</li>
+    </a>
+
+    <a href="/" style="display: none" id="logout">
+      <li>Logout</li>
+    </a>
+
+    <a href="https://discord.com/oauth2/authorize?client_id=1089904140685164686&response_type=code&redirect_uri=https%3A%2F%2Ftwdl.app%2Fauth%2Fdiscord&scope=identify+guilds+guilds.members.read"
+      style="display: none" id="login">
+      <li>Login</li>
+    </a>
 
     <a
-      href="https://discord.com/oauth2/authorize?client_id=1089904140685164686&scope=bot&permissions=1099511627775"
-      ><li>Invite</li></a
-    >
-
-    <a href="/status"><li>Status</li></a>
-
-    <a href="/" style="display: none" id="logout"><li>Logout</li></a>
-
-    <a
-      href="https://discord.com/oauth2/authorize?client_id=1089904140685164686&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A53134%2Fauth%2Fdiscord&scope=identify+guilds+guilds.members.read"
-      style="display: none"
-      id="login"
-      ><li>Login</li></a
-    >
+      href="https://docs.google.com/forms/d/e/1FAIpQLSfbAmd82sZijCsxwF1aM29jpre4n9kYDzhH9rv_hy7Wg25ByA/viewform?usp=dialog">
+      <li>
+        Survey
+      </li>
+    </a>
   </ul>
   <div id="user-card" class="user-card"></div>
 </nav>
