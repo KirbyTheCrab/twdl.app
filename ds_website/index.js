@@ -47,7 +47,7 @@ app.use(
       connectSrc: ["'self'", "https://discord.com/api/", "https://api.steampowered.com/", "https://steamcommunity.com/", "https://cdn.jsdelivr.net"],
       scriptSrcAttr: ["'unsafe-inline'"],
       frameAncestors: ["'none'"],
-      formAction: ["'self'", "https://twdl.app"],
+      formAction: ["*"]
     },
   })
 );
