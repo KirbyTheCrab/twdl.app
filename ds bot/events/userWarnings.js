@@ -36,7 +36,6 @@ async function getUserDiscordActivity(newMember) {
     }
   }
 }
-
 async function removeActivityFromList(newActivity, interaction) {
   const jsonObject = JSON.parse(jsonDataRead);
   let found = false;
@@ -59,7 +58,6 @@ async function removeActivityFromList(newActivity, interaction) {
     await interaction.reply(`The forbidden activity list is empty`);
   }
 }
-
 function removeFromForbiddenActivityList(elementsToRemove) {
   const filteredList = forbiddenActivityList.filter(
     (activity) => activity !== elementsToRemove
@@ -70,7 +68,6 @@ function removeFromForbiddenActivityList(elementsToRemove) {
     ...filteredList
   );
 }
-
 async function addToForbiddenActivityList(newActivity, interaction) {
   const jsonObject = JSON.parse(jsonDataRead);
   if (jsonObject.length > 0) {
@@ -97,7 +94,6 @@ async function addToForbiddenActivityList(newActivity, interaction) {
     saveForbiddenActivityList();
   }
 }
-
 /**
  * Get and validate user activities (custom status)
  * @param {*} newMember
@@ -110,7 +106,6 @@ async function handleCustomStatus(newMember, status) {
     await handleWarnings(newMember, status);
   }
 }
-
 async function initialiseForbiddenList() {
   forbiddenActivityList = JSON.parse(jsonDataRead);
   for (const acitivity of forbiddenActivityList) {
@@ -160,12 +155,10 @@ async function handleWarnings(newMember, status) {
     }
   }
 }
-
 async function saveForbiddenActivityList() {
   const JSON_Data = JSON.stringify(forbiddenActivityList, null, 2);
   writeFileSync(jsonFilePath, JSON_Data)
 }
-
 /**
  * Get all user names from guild and add to listOfUsers hashmap
  * @param {*} guild
@@ -178,7 +171,6 @@ async function getAllUserNamesFromGuild(guild) {
     listOfUsers[user] = { name: user, warning: 0 };
   }
 }
-
 /**
  * Get the number of warnings the user has
  * @param {*} userName key
@@ -201,7 +193,6 @@ async function getNoOfWarning(userName) {
     return 0; // Return 0 in case of error
   }
 }
-
 /**
  * Increase the warning of user, find user record in userWarning.json by username key
  * @param {*} userName key
@@ -221,7 +212,6 @@ async function increaseWarning(userName) {
   const updatedJSON = JSON.stringify(jsonObject, null, 2);
   writeFileSync(jsonFilePath, JSON_Data)
 }
-
 /**
  * Save user to JSON file
  * @param {*} user hashmap of user warning
@@ -230,7 +220,6 @@ async function saveUserToJSON(user) {
   const JSON_Data = JSON.stringify(listOfUsers, null, 2);
   writeFileSync(jsonFilePath, JSON_Data)
 }
-
 // Exporting as default
 export default {
   getAllUserNamesFromGuild,

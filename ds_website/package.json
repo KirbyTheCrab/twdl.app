@@ -10,7 +10,7 @@
   "author": "Toad",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.18.0",
+    "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "express-session": "^1.18.1",
@@ -21,6 +21,7 @@
     "passport": "^0.7.0",
     "passport-steam": "^1.0.18",
     "picmo": "^5.8.5",
+    "spotify-web-api-node": "^5.0.2",
     "uuid": "^11.0.5"
   },
   "devDependencies": {

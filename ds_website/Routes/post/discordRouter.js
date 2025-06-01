@@ -14,10 +14,14 @@ import removeDiscordMessage from "../../Controller/post/client/removeDiscordMess
 import shareWithFriends from "../../Controller/post/client/steamAPI/shareWithFriends.js";
 import shareTradeLink from "../../Controller/post/client/steamAPI/shareTradeLink.js";
 import isEnabled from "../../Controller/post/client/r6Tracker/isEnabled.js";
-import shareWithFriendsConfig from "../../Controller/post/client/steamAPI/shareWithFriendsConfig.js";
-import shareTradeLinkConfig from "../../Controller/post/client/steamAPI/shareTradeLinkConfig.js";
 import shareItem from "../../Controller/post/client/steamAPI/shareItem.js";
 import steamSharingConfiguration from "../../Controller/post/client/steamAPI/steamSharingConfiguration.js";
+import addSpotifyBuddies from "../../Controller/post/client/spotify-noti/addBuddies.js";
+import getChannelInfo from "../../Controller/get/discord/get-channel-info.js";
+import getUserInfo from "../../Controller/get/discord/get-user-info.js";
+import removePlaylist from "../../Controller/post/client/spotify-noti/removePlaylist.js";
+import editPlaylist from "../../Controller/post/client/spotify-noti/editPlaylist.js";
+import itemPricing from "../../Controller/post/client/steamAPI/itemPricing.js";
 import multer from "multer";
 
 const upload = multer({ dest: "uploads/" });
@@ -35,6 +39,9 @@ discordRoute_POST
   .post("/getDataFromJsonFiles", getDataFromJsonFiles)
   .post("/deleteDiscordMessage", removeDiscordMessage)
 
+  .post("/guild/channel-data", getChannelInfo)
+  .post("/guild/user-data", getUserInfo)
+
   //Tracker Network
   .post("/tracker/initTracker", r6Init)
   .post("/tracker/isUserRegistered", isUserRegistered)
@@ -43,8 +50,12 @@ discordRoute_POST
   .post("/tracker/steam/tradeLink", shareTradeLink)
   .post("/guild/tracker/isEnabled", isEnabled)
   .post("/tracker/steam/shareItem", shareItem)
-
-  
   .post("/tracker/steam/steamSharingConfiguration", steamSharingConfiguration)
+  .post("/tracker/steam/itemPricing", itemPricing)
+
+  //spotify routes
+  .post("/spotify/buddies-list/add", addSpotifyBuddies)
+  .post("/spotify/playlist/remove", removePlaylist)
+  .post("/spotify/playlist/edit", editPlaylist)
 
 export default discordRoute_POST;

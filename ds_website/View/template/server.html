@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="/css/universal/server-page-dynamic.css" />
   <script type="module" src="/js/server-page/onWindowLoad.js"></script>
 </head>
+
 <body>
   <script type="module" src="/js/fetchNavBar.js"></script>
   <div id="loading-screen">
@@ -20,13 +21,8 @@
     <ul class="guild-data-list user-list" id="user-list">
       <div class="server-data-list-header">
         <h1>Members</h1>
-        <label for="Search"
-          ><input
-            class="search-bar user-search"
-            id="user-search"
-            type="text"
-            placeholder="🔍 Search for user"
-          />
+        <label for="Search"><input class="search-bar user-search" id="user-search" type="text"
+            placeholder="🔍 Search for user" />
         </label>
       </div>
     </ul>
@@ -34,13 +30,8 @@
     <ul class="guild-data-list role-list" id="role-list">
       <div class="server-data-list-header">
         <h1>Roles</h1>
-        <label for="Search"
-          ><input
-            class="search-bar role-search"
-            id="role-search"
-            type="text"
-            placeholder="🔍 Search for role"
-          />
+        <label for="Search"><input class="search-bar role-search" id="role-search" type="text"
+            placeholder="🔍 Search for role" />
         </label>
       </div>
     </ul>
@@ -48,9 +39,19 @@
 
   <div>
     <ul id="api-list" class="api-list">
-      <a id="r6api"><li>Rainbow Six Siege</li></a>
-      <a id="wowapi"><li>World Of Warcraft</li></a>
-      <a id="cs2api"><li>Counter Strike 2</li></a>
+      <a id="r6api">
+        <li>Rainbow Six Siege</li>
+      </a>
+      <a id="wowapi">
+        <li>World Of Warcraft</li>
+      </a>
+      <a id="cs2api">
+        <li>Counter Strike 2</li>
+      </a>
+
+      <a id="spotifyNotification">
+        <li>Spotify Buddie System</li>
+      </a>
     </ul>
   </div>
 
@@ -58,11 +59,27 @@
     <div id="adminPanel" class="client-configuration-container">
       <ul id="client-configuration" class="client-configuration">
         <h2>Admin Panel</h2>
-        <a id="clientSettings"><li>Client Settings</li></a>
-        <a id="serverSettings"><li>Server Settings</li></a>
-        <a id="reactionRoles"><li>Reaction Roles</li></a>
-        <a id="welcomeMessage"><li>Welcome Message</li></a>
-        <a id="rainbowRoles"><li>Note: Rainbow Roles?</li></a>
+        <a id="clientSettings">
+          <li>Client Settings</li>
+        </a>
+        <a id="serverSettings">
+          <li>Server Settings</li>
+        </a>
+        <a id="reactionRoles">
+          <li>Reaction Roles</li>
+        </a>
+        <a id="welcomeMessage">
+          <li>Welcome Message</li>
+        </a>
+        <a id="forbiddenActivities">
+          <li>Forbidden Activities</li>
+        </a>
+        <a id="nukeTextChannel">
+          <li>Nuke Text Channel</li>
+        </a>
+        <a id="rainbowRoles">
+          <li>Note: Rainbow Roles?</li>
+        </a>
       </ul>
     </div>
 

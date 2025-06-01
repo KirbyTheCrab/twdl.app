@@ -1,8 +1,14 @@
 import client from "../../../../ds bot/main.js";
 
 export default async function getUserInfo(request, response) {
-  const { serverid, userid } = request.query;
-  const guild = await client.guilds.fetch(serverid);
-  const user = await guild.members.fetch(userid);
+  const serverId = request.session.serverPageId;
+  const { userId } = request.body;
+  const guild = await client.guilds.fetch(serverId);
+  const member = await guild.members.fetch(userId);
+
+  const user = {
+    user: member,
+    isBot: member.user.bot
+  }
   return response.json({ user });
 }

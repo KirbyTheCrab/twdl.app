@@ -1,28 +1,40 @@
 import { showLoadingScreen, hideLoadingScreen } from "../../loadingScreen.js";
 
 export default class ServerInfoPage {
+  serverIconUrl;
+  serverId;
+  serverRoleList;
+  serverUserList;
+  serverName;
+  serverIcon;
   async serverStats() {
     showLoadingScreen();
     this.filterSearch("#role-list", "role-search");
     this.filterSearch("#user-list", "user-search");
     const mainContent = document.getElementById("server-stats");
-    await this.fecthServerData();
-    const serverInfoElements = await this.createServerInfo(this.guildData);
+    const responseJson = await this.fecthServerData();
+
+    this.serverIcon = responseJson.guildData.icon;
+    this.serverName = responseJson.guildData.name;
+    this.serverId = responseJson.guildData.id;
+    this.serverRoleList = responseJson.guildData.roles;
+    this.serverUserList = responseJson.guildData.members;
+    const serverInfoElements = await this.createServerInfo();
     mainContent.appendChild(serverInfoElements);
     hideLoadingScreen();
   }
 
-  async createServerInfo(guildData) {
+  async createServerInfo() {
     const serverInfo = document.createElement("div");
-    const serverNameElement = await this.setServerInfo(guildData.name);
+    const serverNameElement = await this.setServerInfo(this.serverName);
     const serverUserCountElement = await this.setServerInfo(
-      `Member Count: ${guildData.members.length}`
+      `Member Count: ${this.serverUserList.length}`
     );
-    const serverIconElement = await this.setServerIcon(guildData.icon);
-    await this.listUsers(guildData.members);
+    const serverIconElement = await this.setServerIcon(this.serverIcon);
+    await this.listUsers(this.serverUserList);
     await this.listRoles("role-list");
     const roleCountElement = await this.setServerInfo(
-      `Role Count: ${guildData.roles.length}`
+      `Role Count: ${this.serverRoleList.length}`
     );
     serverInfo.append(
       serverIconElement,
@@ -36,22 +48,29 @@ export default class ServerInfoPage {
   async listUsers(serverUserList) {
     let userListElement;
     let actionOptionList;
-
+    let userIconElement;
     const userInfoUl = document.getElementById("user-list");
     serverUserList.sort();
     for (let userid of serverUserList) {
       const user = await this.fetchUser(userid);
       //create elements
       userListElement = document.createElement("li");
+      userIconElement = document.createElement("img");
       actionOptionList = document.createElement("select");
 
       userListElement.addEventListener(
         "click",
         this.showActionButtons(actionOptionList)
       );
-      userListElement.textContent = `${user.displayName}`;
+      userIconElement.src = user.user.displayAvatarURL;
+
       //class lists
       userListElement.classList.add("user-list-li");
+      userIconElement.classList.add("userIcon");
+
+      userListElement.appendChild(userIconElement);
+      userListElement.appendChild(document.createTextNode(user.user.displayName));
+
       userInfoUl.append(userListElement);
     }
   }
@@ -83,9 +102,11 @@ export default class ServerInfoPage {
   async fecthServerData() {
     const response = await fetch("/discord-data/guild/guild-data");
     const responseJson = await response.json();
-    this.guildData = responseJson.guildData;
-    this.serverId = this.guildData.id;
-    this.serverRoleList = this.guildData.roles;
+    return responseJson;
+  }
+
+  getServerId() {
+    return this.serverId;
   }
 
   /**
@@ -106,12 +127,15 @@ export default class ServerInfoPage {
    * @param {string} userid
    * @returns JSON Discord object containing user info e.g: id or display name
    */
-  async fetchUser(userid) {
-    const response = await fetch(
-      `/discord-data/guild/user-data?serverid=${this.serverId}&userid=${userid}`
-    );
-    const responseJson = await response.json();
-    return responseJson.user;
+  async fetchUser(userId) {
+
+    const response = await fetch("/discord-data/guild/user-data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId })
+    })
+    const userData = await response.json();
+    return userData.user;
   }
 
   /**
@@ -121,9 +145,12 @@ export default class ServerInfoPage {
    */
   async setServerIcon(serverIconId) {
     const serverIcon = document.createElement("img");
-    serverIcon.src = serverIconId
-      ? `https://cdn.discordapp.com/icons/${this.serverId}/${serverIconId}.png`
-      : `/img/discord-default-green.png`;
+    if (serverIconId) {
+      this.serverIconUrl = `https://cdn.discordapp.com/icons/${this.serverId}/${serverIconId}.png`;
+      serverIcon.src = this.serverIconUrl;
+    } else {
+      serverIcon.src = `/img/discord-default-green.png`
+    }
     serverIcon.classList.add("server-icon");
     return serverIcon;
   }

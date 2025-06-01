@@ -30,7 +30,7 @@ export default async function isCs2ItemSharingConfigured(request, response) {
     if (foundObject) {
       return response.json(foundObject.itemShareChannel);
     }
-    return response.json({ message: "cs2ItemSharingChannel not found" });
+    return response.json({ error: "cs2ItemSharingChannel not found" });
   } catch (error) {
     return response.json({ error: error.message });
   }

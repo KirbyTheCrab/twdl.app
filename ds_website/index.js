@@ -95,6 +95,10 @@ app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "View/index.html"));
 });
 
+app.get("/inspect-item", (req, res) => {
+  res.sendFile(join(__dirname, "View/template/inspectItem.html"));
+})
+
 app.get("/auth/discord", async (req, res) => {
   req.session.isLoggedIn = true;
 
@@ -103,7 +107,7 @@ app.get("/auth/discord", async (req, res) => {
     client_secret: process.env.CLIENT_SECRET,
     grant_type: "authorization_code",
     code: req.query.code,
-    redirect_uri: "https://twdl.app/auth/discord",
+    redirect_uri: "http://localhost:53134/auth/discord",
   });
 
   const response = await fetch("https://discord.com/api/oauth2/token", {

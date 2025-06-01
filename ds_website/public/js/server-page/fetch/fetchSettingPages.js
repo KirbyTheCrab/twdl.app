@@ -3,6 +3,7 @@ import GuildSettings from "../guildSettings/guildSettings.js";
 import ReactionRoles from "../reaction-role/reaction-role.js";
 import WelcomeMessage from "../welcomeMessage/welcomeMessage.js";
 import Cs2Api from "../cs2Api/cs2Api.js";
+import SpotifyNotification from "../spotifyNoti/spotifyNotification.js";
 export default class FetchSettingPages {
   constructor() {
     this.clientSettings = document.getElementById("clientSettings");
@@ -12,6 +13,7 @@ export default class FetchSettingPages {
     this.r6api = document.getElementById("r6api");
     this.wowapi = document.getElementById("wowapi");
     this.cs2api = document.getElementById("cs2api");
+    this.spotifyNotification = document.getElementById("spotifyNotification");
   }
 
   //template caching
@@ -73,42 +75,38 @@ export default class FetchSettingPages {
           await this.loadHtmlTemplate("/server-page/reactionRoles/poll.html");
         });
       });
-
-      //Server Settings
       this.serverSettings.addEventListener("click", async () => {
         await this.loadHtmlTemplate("/server-page/serverSettings.html");
         new GuildSettings(serverInfoPage);
         this.loadScriptOnce("/js/server-page/guildSettings/guildSettings.js");
       });
-
-      //Client Settings
       this.clientSettings.addEventListener("click", async () => {
         await this.loadHtmlTemplate("/server-page/clientSettings.html");
         new ClientSettings(serverInfoPage);
         this.loadScriptOnce("/js/server-page/clientSettings/clientSettings.js");
       });
-
-      //Welcome Message
       this.welcomeMessage.addEventListener("click", async () => {
         await this.loadHtmlTemplate("/server-page/welcomeMessage.html");
         new WelcomeMessage();
       });
     }
-    //R6 API
     this.r6api.addEventListener("click", async () => {
       // await this.loadHtmlTemplate("/server-page/r6api.html");
       // new r6Tracker();
     });
-
-    //WOW API
     this.wowapi.addEventListener("click", async () => {
       await this.loadHtmlTemplate("/server-page/wowapi.html");
     });
-
-    //CS2 API
     this.cs2api.addEventListener("click", async () => {
       await this.loadHtmlTemplate("/server-page/cs2/cs2api.html");
       new Cs2Api();
+    });
+    this.spotifyNotification.addEventListener("click", async () => {
+      await this.loadHtmlTemplate("/server-page/spotifyNoti.html");
+      new SpotifyNotification(serverInfoPage);
+      this.loadScriptOnce(
+        "/js/server-page/spotifyNoti/spotifyNotification.js"
+      );
     });
   }
 }

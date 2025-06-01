@@ -5,6 +5,9 @@ const { getUserDiscordActivity, initialiseForbiddenList } = userWarnings;
 import reloadWelcomeMessage from "./handlers/reloadWelcomeMessage.js";
 import CommandCreater from "./handlers/command_creater.js";
 import { EmbedBuilder } from "discord.js";
+import SpotifyBuddieSystem from "./events/spotifyAPI_Playlist.js";
+import fs from 'node:fs';
+
 const commandCreater = new CommandCreater();
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -76,12 +79,27 @@ client.on("ready", async () => {
   // await commandCreater.createGuildCommands();
   await commandCreater.setCommands();
   await initialiseForbiddenList();
+  //Spotify Buddie system polling 
+  //setInterval(pollEveryServer, 300000); //every 5 minutes
+  pollEveryServer();
   console.log(`Logged in as ${client.user.tag}!`);
 });
-client.login(client_token);
-// const guild = client.guilds.cache.get("691685252623499374");
-// await getAllUserNamesFromGuild(guild);
-// await pollPlaylist(client);
-// await startRainbow();
 
+function pollEveryServer() {
+  const data = fs.readFileSync('../ds bot/model/spotifyNoti/serverConfigs.json', 'utf8');
+  const allServerConfiguration = JSON.parse(data).serverConfigs;
+  allServerConfiguration.forEach((serverConfigs) => {
+    const { serverId, playlists } = serverConfigs;
+
+    playlists.forEach((playlistConfigs) => {
+      try {
+        new SpotifyBuddieSystem(serverId, playlistConfigs, client);
+      } catch (error) {
+        console.error(`Error polling playlist ${playlistConfigs.playlistId} in server ${serverId}`, error)
+      }
+    })
+  })
+}
+// await startRainbow();
+client.login(client_token);
 export default client;
