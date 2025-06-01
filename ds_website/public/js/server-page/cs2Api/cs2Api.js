@@ -90,7 +90,13 @@ export default class Cs2Api {
     );
     if (this.isTradeLinkConfigured.error || this.isCs2ItemSharingConfigured.error || this.isShareWithFriendsConfigured.error) {
       const initTrackerDiv = document.getElementById("initTrackerDiv");
-      initTrackerDiv.remove();
+      const mainSteam = document.getElementById("main");
+      if (initTrackerDiv) {
+        initTrackerDiv.remove();
+      }
+      if (mainSteam) {
+        mainSteam.style.display = "none";
+      }
     }
     if (this.steamUser.steamAuthUser) {
       await this.shareWithFriendsForm(
