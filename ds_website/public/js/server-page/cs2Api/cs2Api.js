@@ -1,6 +1,7 @@
 import Tracker from "../../tracker.js";
 import { showLoadingScreen, hideLoadingScreen } from "../../loadingScreen.js";
 import PopUpMessage from "../../popUpMessageFactory.js";
+
 export default class Cs2Api {
   steamUser;
   isUserMod;
@@ -11,8 +12,17 @@ export default class Cs2Api {
   isTradeLinkConfigured;
   isCs2ItemSharingConfigured;
   isShareWithFriendsConfigured;
+  userShareTradeLink;
+  inventoryCache = new Map();
   constructor() {
     new Tracker("cs2Tracker");
+    this.itemExteriorOrder = [
+      "Factory New",
+      "Minimal Wear",
+      "Field-Tested",
+      "Well-Worn",
+      "Battle-Scarred"
+    ]
     this.itemRarityOrder = [
       "Extraordinary",
       "Covert",
@@ -25,12 +35,21 @@ export default class Cs2Api {
       "Consumer Grade",
       "Base Grade",
     ];
+    this.itemTypeOrder = [
+      "Rifle",
+      "Sniper Rifle",
+      "Pistol",
+      "SMG",
+      "Shotgun",
+      "Machine Guns"
+    ]
     this.init();
   }
   async init() {
     await this.fetchUserStatus();
     await this.steamAuth();
     showLoadingScreen();
+    this.userShareTradeLink = await this.didUserShareTradeLink();
     this.isTradeLinkConfigured = await this.getIsTradeLinkConfigured();
     this.isShareWithFriendsConfigured =
       await this.getIsShareWithFriendsConfigured();
@@ -69,6 +88,10 @@ export default class Cs2Api {
       "cs2ItemChannelBtn",
       ".itemShareChannel"
     );
+    if (this.isTradeLinkConfigured.error || this.isCs2ItemSharingConfigured.error || this.isShareWithFriendsConfigured.error) {
+      const initTrackerDiv = document.getElementById("initTrackerDiv");
+      initTrackerDiv.remove();
+    }
     if (this.steamUser.steamAuthUser) {
       await this.shareWithFriendsForm(
         this.steamUser.steamAuthUser._json.steamid,
@@ -79,9 +102,14 @@ export default class Cs2Api {
         this.steamUser.steamAuthUser._json.steamid,
         this.isTradeLinkConfigured
       );
-      await this.createItemDisplay(this.steamUserCs2Inventory.descriptions);
+      if (!this.userShareTradeLink) {
+        const cs2InventoryHeader = document.getElementById("cs2-inventory-header");
+        cs2InventoryHeader.remove();
+      } else {
+        await this.createItemDisplay(this.steamUserCs2Inventory.descriptions);
+        await this.filterCs2Items();
+      }
 
-      await this.filterCs2Items();
     }
     hideLoadingScreen();
   }
@@ -94,27 +122,41 @@ export default class Cs2Api {
     }
   }
   async filterCs2Items() {
-    const data = this.steamUserCs2Inventory;
     document
       .getElementById("filter-cs2-items")
       .addEventListener("change", (event) => {
-        // const filterValue = event.target.value;
-        const sortedDescriptions = this.sortByRarity(data.descriptions);
+        const filterValue = event.target.value;
+        let sortedDescriptions;
+        switch (filterValue) {
+          case "Rarity": {
+            sortedDescriptions = this.sortByRarity(this.steamUserCs2Inventory.descriptions, filterValue, this.itemRarityOrder);
+            break;
+          }
+          case "Exterior": {
+            sortedDescriptions = this.sortByRarity(this.steamUserCs2Inventory.descriptions, filterValue, this.itemExteriorOrder);
+            break;
+          }
+          case "Type": {
+            sortedDescriptions = this.sortByRarity(this.steamUserCs2Inventory.descriptions, filterValue, this.itemTypeOrder);
+            break;
+          }
+        }
+        sortedDescriptions.sort();
         this.createItemDisplay(sortedDescriptions);
       });
   }
-  sortByRarity(descriptions) {
-    return descriptions.sort((a, b) => {
+  sortByRarity(list, filter, listToFilterBy) {
+    return list.sort((a, b) => {
       // Get the rarity tag from the tags array
       const getRarityTag = (item) =>
-        item.tags.find((tag) => tag.category === "Rarity")
+        item.tags.find((tag) => tag.category === `${filter}`)
           ?.localized_tag_name || "";
 
       const rarityA = getRarityTag(a);
       const rarityB = getRarityTag(b);
 
-      const indexA = this.itemRarityOrder.indexOf(rarityA);
-      const indexB = this.itemRarityOrder.indexOf(rarityB);
+      const indexA = listToFilterBy.indexOf(rarityA);
+      const indexB = listToFilterBy.indexOf(rarityB);
 
       return (
         (indexA === -1 ? Infinity : indexA) -
@@ -148,10 +190,22 @@ export default class Cs2Api {
           });
       });
   }
+
+  async didUserShareTradeLink() {
+    const response = await fetch("/discord-data/tracker/steam/didUserShareTradeLink");
+    const data = await response.json();
+    console.log(data.userProfile);
+    if (data.userProfile) {
+      return data.userProfile.tradeLink;
+    }
+  }
   async shareTradeLinkForm(steamid, channelId) {
     const shareLinkDoc = document.createElement("a");
     const shareTradeLinkDiv = document.getElementById("shareTradeLinkDiv");
-
+    const tradeLink = document.getElementById("tradeLink");
+    if (this.userShareTradeLink) {
+      tradeLink.value = this.userShareTradeLink;
+    }
     shareLinkDoc.href = `https://steamcommunity.com/profiles/${steamid}/tradeoffers/privacy`;
     shareLinkDoc.textContent = "View your trade link here";
     shareLinkDoc.classList.add("api-list");
@@ -161,12 +215,12 @@ export default class Cs2Api {
       .getElementById("shareTradeLink")
       .addEventListener("submit", async (event) => {
         event.preventDefault();
-        const tradeLink = document.getElementById("tradeLink").value;
+        const tradeLinkValue = tradeLink.value;
         await fetch("/discord-data/tracker/steam/tradeLink", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            tradeLink,
+            tradeLinkValue,
             channelId,
           }),
         })
@@ -176,64 +230,122 @@ export default class Cs2Api {
               response.message || response.error,
               response.message ? "ok" : "error"
             );
+            setTimeout(() => {
+              location.reload();
+            }, 500);
           });
       });
   }
+  async getAssetInfo(classid, instanceid) {
+    return this.steamUserCs2Inventory.assets.find(
+      asset => asset.classid === classid && asset.instanceid === instanceid
+    ) || null;
+  }
   async createItemDisplay(data) {
+    const itemsPerPage = 16; // Number of items per page
+    let currentPage = 1; // Current page
+
     const inventoryDiv = document.getElementById("inventory");
-    inventoryDiv.innerHTML = "";
-    for (let i = 0; i < data.length; i++) {
-      const itemName = data[i].market_name;
-      const itemType = data[i].type;
-      const itemIconStr = data[i].icon_url;
-      let inspectInGame;
-      if (data[i].actions) {
-        inspectInGame = data[i].actions[0]?.link;
-      }
+    const paginationDiv = document.getElementById("pagination"); // Add a container for pagination controls
 
-      let itemColor = "";
-      for (let j = 0; j < data[i].tags.length; j++) {
-        if (data[i].tags[j].category === "Rarity") {
-          itemColor = data[i].tags[j].color;
-          break;
+    // Function to render items for the current page
+    const renderPage = async () => {
+      inventoryDiv.innerHTML = "";
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const pageItems = data.slice(startIndex, endIndex);
+
+      for (let i = 0; i < pageItems.length; i++) {
+        console.log(pageItems);
+        const itemName = pageItems[i].market_name;
+        const itemType = pageItems[i].type;
+        const itemIconStr = pageItems[i].icon_url;
+        const classid = pageItems[i].classid;
+        const instanceid = pageItems[i].instanceid;
+        const assetId = pageItems[i].assetId;
+        const marketHashName = pageItems[i].market_hash_name;
+        const assetInfo = await this.getAssetInfo(classid, instanceid);
+
+        let inspectInGame;
+        let inspectInGameLink;
+        if (pageItems[i].actions) {
+          inspectInGame = pageItems[i].actions[0]?.link;
+          inspectInGameLink = inspectInGame
+            .replace('%owner_steamid%', this.steamUser.steamAuthUser.id)
+            .replace('%assetid%', assetInfo.assetid);
         }
+
+        let itemColor = "";
+        for (let j = 0; j < pageItems[i].tags.length; j++) {
+          if (pageItems[i].tags[j].category === "Rarity") {
+            itemColor = pageItems[i].tags[j].color;
+            break;
+          }
+        }
+        const itemIcon = `https://steamcommunity-a.akamaihd.net/economy/image/${itemIconStr}`;
+
+        // Create item container
+        const itemDiv = document.createElement("div");
+        itemDiv.classList.add("item");
+
+        // Create child elements
+        const itemImg = document.createElement("img");
+        itemImg.src = itemIcon;
+
+        const itemNameElement = document.createElement("p");
+        itemNameElement.textContent = itemName;
+
+        const itemTypeElement = document.createElement("p");
+        itemTypeElement.textContent = itemType;
+
+        const shareItemForm = document.createElement("form");
+        const shareItemBtn = document.createElement("input");
+        shareItemBtn.type = "submit";
+        shareItemBtn.value = "Share Item";
+
+        // Add event listener
+        shareItemForm.append(shareItemBtn);
+        itemDiv.append(itemImg, itemNameElement, itemTypeElement, shareItemForm);
+        itemDiv.style.backgroundColor = `#${itemColor}`;
+        inventoryDiv.appendChild(itemDiv);
+        const itemData = { itemName, itemColor, itemIconStr, inspectInGameLink, marketHashName, assetId };
+        await this.shareItem(shareItemForm, itemData);
       }
-      const itemIcon = `https://steamcommunity-a.akamaihd.net/economy/image/${itemIconStr}`;
+    };
 
-      // Create item container
-      const itemDiv = document.createElement("div");
-      itemDiv.classList.add("item");
+    // Function to render pagination controls
+    const renderPagination = () => {
+      paginationDiv.innerHTML = "";
+      const totalPages = Math.ceil(data.length / itemsPerPage);
 
-      // Create child elements
-      const itemImg = document.createElement("img");
-      itemImg.src = itemIcon;
-
-      const itemNameElement = document.createElement("p");
-      itemNameElement.textContent = itemName;
-
-      const itemTypeElement = document.createElement("p");
-      itemTypeElement.textContent = itemType;
-
-      const shareItemForm = document.createElement("form");
-      const shareItemBtn = document.createElement("input");
-      shareItemBtn.type = "submit";
-      shareItemBtn.value = "Share Item";
-
-      //add event listener
-      shareItemForm.append(shareItemBtn);
-      itemDiv.append(itemImg, itemNameElement, itemTypeElement, shareItemForm);
-      itemDiv.style.backgroundColor = `#${itemColor}`;
-      inventoryDiv.appendChild(itemDiv);
-
-      const itemData = { itemName, itemColor, itemIconStr, inspectInGame };
-      await this.shareItem(shareItemForm, itemData);
-    }
+      for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.textContent = i;
+        pageButton.classList.add("pagination-button");
+        if (i === currentPage) {
+          pageButton.classList.add("active");
+        }
+        pageButton.addEventListener("click", () => {
+          currentPage = i;
+          renderPage();
+          renderPagination();
+        });
+        paginationDiv.appendChild(pageButton);
+      }
+    };
+    // Initial render
+    renderPage();
+    renderPagination();
   }
   async shareItem(form, itemData) {
     const channelId = this.isCs2ItemSharingConfigured;
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      await fetch("/discord-data//tracker/steam/shareItem", {
+      const itemPrice = await this.getItemPricing(itemData.marketHashName);
+      itemData.itemPrice = itemPrice.median_price;
+      itemData.tradeLink = this.userShareTradeLink;
+
+      await fetch("/discord-data/tracker/steam/shareItem", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ channelId, itemData }),
@@ -247,6 +359,14 @@ export default class Cs2Api {
         });
     });
   }
+  /**
+   * Create edit forms for further settings options (profile sharing channel, cs2 trade link channel, cs2 item sharing channel)
+   * @param {*} configuredValue 
+   * @param {*} formId 
+   * @param {*} buttonId 
+   * @param {*} selectClass 
+   * @returns 
+   */
   async setupChannelEditing(configuredValue, formId, buttonId, selectClass) {
     let isBeingEdited = false;
     if (typeof configuredValue !== "string") return;
@@ -281,6 +401,13 @@ export default class Cs2Api {
       }
     });
   }
+
+  /**
+   * Create form for further configuration options (profile sharing channel, cs2 trade link channel, cs2 item sharing channel)
+   * @param {#} formId 
+   * @param {*} inputSelector 
+   * @param {*} channelKey 
+   */
   async shareConfig(formId, inputSelector, channelKey) {
     const form = document.getElementById(formId);
     form.addEventListener("submit", async (event) => {
@@ -303,11 +430,20 @@ export default class Cs2Api {
   }
   //getters
   async fetchCs2Items(steamid, appid = 730, contextid = 2) {
-    return await fetch(
+    const cacheKey = `${steamid}-${appid}-${contextid}`;
+
+    if (this.inventoryCache.has(cacheKey)) {
+      return this.inventoryCache.get(cacheKey);
+    }
+
+    const data = await fetch(
       `/discord-data/api/steam/inventory?steamid=${steamid}&appid=${appid}&contextid=${contextid}`
-    )
-      .then((response) => response.json())
-      .then((data) => data);
+    ).then((response) => response.json());
+
+    this.inventoryCache.set(cacheKey, data);
+    setTimeout(() => this.inventoryCache.delete(cacheKey), 3600 * 1000);
+
+    return data;
   }
   async fetchUserStatus() {
     [this.steamUser, this.isMod] = await Promise.all([
@@ -340,5 +476,16 @@ export default class Cs2Api {
     )
       .then((res) => res.json())
       .then((data) => data);
+  }
+
+  //come back to providing a price for items not sure how this will work or if it will work at all
+  async getItemPricing(marketHashName) {
+    const response = await fetch("/discord-data/tracker/steam/itemPricing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ marketHashName })
+    })
+    const data = await response.json();
+    return data;
   }
 }

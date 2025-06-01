@@ -30,7 +30,7 @@ export default async function isTradeLinkConfigured(request, response) {
     if (foundObject) {
       return response.json(foundObject.shareWithFriendsChannel);
     }
-    return response.json({ message: "shareWithFriendsChannel not found" });
+    return response.json({ error: "shareWithFriendsChannel not found" });
   } catch (error) {
     return response.json({ error: error.message });
   }

@@ -1,5 +1,5 @@
 import client from "../../../../../ds bot/main.js";
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
 
 export default async function shareItem(request, response) {
   const { channelId, itemData } = request.body;
@@ -14,16 +14,31 @@ export default async function shareItem(request, response) {
     const embedBuilder = new EmbedBuilder()
       .setColor(itemData.itemColor)
       .setTitle(itemData.itemName)
-      .setDescription(`Inspect Link: ${itemData.inspectInGame}`)
+      .setDescription(`Item owner: <@${userId}>\nItem Price: **${itemData.itemPrice}**\n\nUse the "Trade for this item" button below or contact the item owner directly if you are interested. \nHappy Trading!`)
       .setThumbnail(
         `https://steamcommunity-a.akamaihd.net/economy/image/${itemData.itemIconStr}`
       )
       .setAuthor({
-        name: `Item Owner: ${member.user.username}`,
+        name: `${member.displayName} just shared a new item!`,
         iconURL: member.user.displayAvatarURL({ dynamic: true }),
       });
-    await channel.send({ embeds: [embedBuilder] });
+
+    const inspectLink = new ButtonBuilder()
+      .setLabel("Inspect item in game")
+      .setStyle(ButtonStyle.Link)
+      .setURL(`http://localhost:53134/inspect-item?link=${encodeURIComponent(itemData.inspectInGameLink)}`)
+
+    const itemTradeLink = `${itemData.tradeLink}/${itemData.assetId}/&contextid=2&appid=730`
+    const tradeItem = new ButtonBuilder()
+      .setLabel("Trade for this item")
+      .setStyle(ButtonStyle.Link)
+      .setURL(itemTradeLink)
+
+    const row = new ActionRowBuilder().addComponents(inspectLink, tradeItem);
+    await channel.send({ embeds: [embedBuilder], components: [row] });
+    return response.json({ message: "Item shared in designated text channel" })
   } catch (error) {
-    return response.json({ error: "Unable to share this item" });
+    console.error(error);
+    return response.json({ error: `Unable to share this item` });
   }
 }

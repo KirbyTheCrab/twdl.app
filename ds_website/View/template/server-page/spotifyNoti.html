@@ -1,0 +1,102 @@
+<h1>Spotify Buddie System</h1>
+
+<div id="loading-screen" style="display: none">
+    <p>Loading, please wait...</p>
+</div>
+
+<div class="addPlaylistDiv">
+    <input id="addPlaylist" class="addPlaylist" type="submit" value="Add Playlist">
+</div>
+
+<header id="enableSpotifyNotiDiv" class="newSpotifyFormHeader">
+    <form id="spotifyPlaylistNotificationChannel">
+        <h3>Spotify Buddie Alert System</h3>
+        <div class="fields">
+            <input type="text" id="playlistId" name="playlistId" required placeholder="Playlist ID" />
+            <input type="text" id="inviteLink" name="inviteLink" required placeholder="Invite Link" />
+
+            <input type="radio" value="dm" name="messageType" id="dm">
+            <label for="dm">Direct Message</label><br>
+
+            <input type="radio" value="tc" name="messageType" id="tc">
+            <label for="tc">Text Channel</label>
+
+            <select name="textChannel" id="channel" style="display: none;">
+                <option value="" disabled selected>Select text channel</option>
+            </select>
+
+
+            <ul id="spotify-buddies-ul" class="spotify-buddies-ul">
+                <div class="server-data-list-header">
+                    <h1>Members</h1>
+                    <label for="Search"><input class="search-bar spotify-buddie-search" id="spotify-buddie-search"
+                            type="text" placeholder="🔍 Search for user" />
+                    </label>
+                </div>
+            </ul>
+            <input type="submit" value="Add Playlist" id="actionBtn">
+        </div>
+    </form>
+    <input type="submit" id="closePlaylistCreator" value="Close">
+</header>
+
+<header id="enableEditSpotifyNotiDiv" class="newSpotifyFormHeader">
+    <form id="editSpotifyPlaylist">
+        <h3>Spotify Buddie Alert System - </h3>
+        <h3 id="playlistName"></h3>
+
+        <div class="fields">
+
+            <input type="text" id="edit-playlistId" name="playlistId" required placeholder="Playlist ID" />
+            <input type="text" id="edit-inviteLink" name="inviteLink" required placeholder="Invite Link" />
+
+            <input type="radio" value="dm" name="messageType" id="edit-dm">
+            <label for="dm">Direct Message</label><br>
+
+            <input type="radio" value="tc" name="messageType" id="edit-tc">
+            <label for="tc">Text Channel</label>
+
+            <select name="editTextChannel" id="edit-channel" style="display: none;">
+                <option value="" disabled selected>Select text channel</option>
+            </select>
+
+
+            <ul id="edit-spotify-buddies-ul" class="spotify-buddies-ul">
+                <div class="server-data-list-header">
+                    <h1>Members</h1>
+                    <label for="Search"><input class="search-bar spotify-buddie-search" id="spotify-buddie-search"
+                            type="text" placeholder="🔍 Search for user" />
+                    </label>
+                </div>
+            </ul>
+            <input type="submit" value="Edit Playlist" id="actionBtn">
+        </div>
+    </form>
+    <input type="submit" id="closeEditPlaylistCreator" value="Close">
+</header>
+
+<div id="confirmationDIV" style="display: none" class="confirmation">
+    <form id="confirmationForm" class="confirmationForm">
+        <h2>Continue with process?</h2>
+        <p>Are you sure you want to delete this playlist?</p>
+        <input class="confirmationBtn" type="submit" name="response" value="Yes" />
+        <input class="confirmationBtn" type="submit" name="response" value="No" />
+    </form>
+</div>
+
+<header style="display: none;" id="playlistTableHeader">
+    <table id="playlistsTable">
+        <thead id="playlistThead">
+            <tr>
+                <th>Playlist Name</th>
+                <th>Notification Type</th>
+                <th>Collaborators</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="playlistTableBody">
+
+        </tbody>
+    </table>
+</header>

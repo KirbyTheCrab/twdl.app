@@ -5,7 +5,6 @@ import isUserMod from "../../Controller/get/discord/is-user-mod.js";
 import getUserCount from "../../Controller/get/discord/user-count.js";
 import getClientServers from "../../Controller/get/discord/get-client-servers.js";
 import getGuildData from "../../Controller/get/guild/guild-data.js";
-import getUserInfo from "../../Controller/get/discord/get-user-info.js";
 import getRoleInfo from "../../Controller/get/discord/get-role-info.js";
 import getTextChannels from "../../Controller/get/discord/get-text-channels.js";
 import getServerRoles from "../../Controller/get/discord/get-server-roles.js";
@@ -16,6 +15,8 @@ import getSteamUserInventory from "../../Controller/get/steam/get-inventory.js";
 import isTradeLinkConfigured from "../../Controller/post/client/steamAPI/isTradeLinkConfigured.js";
 import isShareWithFriendsConfigured from "../../Controller/post/client/steamAPI/isShareWithFriendsConfigured.js";
 import isCs2ItemSharingConfigured from "../../Controller/post/client/steamAPI/isCs2ItemSharingConfigured.js";
+import getServerPlaylists from "../../Controller/get/spotify/getPlaylists.js";
+import didUserShareTradeLink from "../../Controller/post/client/steamAPI/didUserShareTradeLink.js";
 const discordRoute_GET = express.Router();
 
 discordRoute_GET
@@ -28,18 +29,18 @@ discordRoute_GET
 
   //guild
   .get("/guild/guild-data", getGuildData)
-  .get("/guild/user-data", getUserInfo)
   .get("/guild/role-data", getRoleInfo)
   .get("/guild/text-channels", getTextChannels)
   .get("/guild/roles", getServerRoles)
   .get("/guild/disableWelcomeMsg", disableWelcomeMsg)
+  .get("/spotify/playlists", getServerPlaylists)
 
   //Tracker Network
-
   .get("/guild/tracker/isUserRegistered", isUserRegistered)
   .get("/r6Tracker/apiConn", r6TrackerAPIConn)
   .get("/api/steam/inventory", getSteamUserInventory)
   .get("/guild/tracker/steam/isTradeLinkConfigured", isTradeLinkConfigured)
+  .get("/tracker/steam/didUserShareTradeLink", didUserShareTradeLink)
   .get(
     "/guild/tracker/steam/isShareWithFriendsConfigured",
     isShareWithFriendsConfigured

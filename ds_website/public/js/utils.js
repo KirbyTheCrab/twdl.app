@@ -1,7 +1,6 @@
 export function changeColorNoToHex(colorNo) {
   return `#${colorNo.toString(16).padStart(6, "0")}`;
 }
-
 export function showEmojiPicker() {
   let pickerVisibility = false;
   document
@@ -25,7 +24,6 @@ export function selectedEmoji(picker) {
     document.getElementById("selectedEmoji").value = event.emoji;
   });
 }
-
 export async function getTextChannels() {
   const response = await fetch(`/discord-data/guild/text-channels`).then(
     (response) => response.json()
@@ -38,12 +36,12 @@ export async function getRoles() {
   );
   return response;
 }
-
 export async function populateChannelSelect() {
   const channels = await getTextChannels();
   // const channelSelection = document.getElementById("channel");
-  const channelSelections = document.querySelectorAll('[id="channel"]');
+  const channelSelections = document.querySelectorAll('#channel, #edit-channel');
   channelSelections.forEach((channelSelection) => {
+    console.log(channelSelection);
     const channelsData = channels.textChannels;
     for (let i = 0; i < channelsData.length; i++) {
       if (channelsData[i].type == "0") {

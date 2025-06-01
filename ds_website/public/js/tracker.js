@@ -1,6 +1,7 @@
 import PopUpMessage from "./popUpMessageFactory.js";
 import { hideLoadingScreen, showLoadingScreen } from "./loadingScreen.js";
 import { populateChannelSelect } from "../js/utils.js";
+
 export default class Tracker {
   gameTracker;
   trackerIsEnabled;
@@ -8,8 +9,10 @@ export default class Tracker {
   enableTrackerDiv;
   initTrackerDiv;
   mainDiv;
+  furtherSettings;
   userMod;
   steamAuthUser;
+
   constructor(gameTracker) {
     this.gameTracker = gameTracker;
     this.checkbox = document.getElementById("enableTracker");
@@ -19,6 +22,7 @@ export default class Tracker {
     this.furtherSettings = document.getElementById("furtherSettings");
     this.init();
   }
+
   async init() {
     await this.fetchTrackerStatus();
     this.setupCheckboxListener();
@@ -26,120 +30,156 @@ export default class Tracker {
   }
 
   async fetchTrackerStatus() {
-    [this.trackerIsEnabled, this.userMod, this.steamAuthUser] =
-      await Promise.all([
-        this.isTrackerEnabled(),
-        this.isUserMod(),
-        this.getSteamAuthUser(),
-      ]);
+    [
+      this.trackerIsEnabled,
+      this.userMod,
+      this.steamAuthUser
+    ] = await Promise.all([
+      this.isTrackerEnabled(),
+      this.isUserMod(),
+      this.getSteamAuthUser(),
+    ]);
   }
 
   setupCheckboxListener() {
+    if (!this.checkbox) return;
     this.checkbox.addEventListener("change", async () => {
       if (this.checkbox.checked) {
         await this.initTracker();
+        this.updateUI();
       } else {
-        initTrackerDiv.style.display = "none";
+        const confirmationDiv = document.getElementById("confirmationDIV");
+        const confirmationForm = document.getElementById("confirmationForm");
+        if (confirmationDiv && confirmationForm) {
+          confirmationDiv.style.display = "block";
+          const submitHandler = async (confirmEvent) => {
+            confirmEvent.preventDefault();
+            const clickedButton = document.activeElement;
+            confirmationDiv.style.display = "none";
+            if (clickedButton?.value === "Yes") {
+              // Remove file from cs2Tracker
+              this.trackerIsEnabled = false;
+              this.updateUI();
+            }
+            this.initTrackerDiv && (this.initTrackerDiv.style.display = "none");
+            confirmationForm.removeEventListener("submit", submitHandler);
+          };
+          confirmationForm.addEventListener("submit", submitHandler);
+        }
       }
     });
   }
 
   updateUI() {
-    if (this.userMod) {
-      enableTrackerDiv.style.display = "block";
+    if (this.userMod && this.enableTrackerDiv) {
+      this.enableTrackerDiv.style.display = "block";
     }
-    this.initTrackerDiv.style.display =
-      this.trackerIsEnabled && !this.steamAuthUser ? "block" : "none";
-    this.checkbox.checked = this.trackerIsEnabled;
-    if (this.trackerIsEnabled) {
-      furtherSettings.style.display = "block";
+    if (this.initTrackerDiv) {
+      this.initTrackerDiv.style.display =
+        this.trackerIsEnabled && !this.steamAuthUser ? "block" : "none";
+    }
+    if (this.checkbox) {
+      this.checkbox.checked = !!this.trackerIsEnabled;
+    }
+    if (this.trackerIsEnabled && this.furtherSettings) {
+      this.furtherSettings.style.display = "block";
       populateChannelSelect();
     }
     if (this.steamAuthUser) {
-      this.initTrackerDiv.remove();
-      this.mainDiv.style.display = "block";
-      document.getElementById("profile").src =
-        this.steamAuthUser._json.avatarmedium;
-      document.getElementById("name").textContent =
-        this.steamAuthUser.displayName;
-      this.initTrackerDiv.remove();
-      this.mainDiv.style.display = "block";
+      if (this.initTrackerDiv) this.initTrackerDiv.remove();
+      if (this.mainDiv) this.mainDiv.style.display = "block";
+      const profile = document.getElementById("profile");
+      const name = document.getElementById("name");
+      if (profile && this.steamAuthUser._json?.avatarmedium) {
+        profile.src = this.steamAuthUser._json.avatarmedium;
+      }
+      if (name && this.steamAuthUser.displayName) {
+        name.textContent = this.steamAuthUser.displayName;
+      }
     }
   }
+
   async saveUser(data) {
-    await fetch(
-      `/discord-data/tracker/saveUser?gameTracker=${this.gameTracker}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }
-    )
-      .then((response) => response.json())
-      .then((response) => {
-        new PopUpMessage(
-          response.message || response.error,
-          response.message ? "ok" : "error"
-        );
-      });
+    try {
+      const response = await fetch(
+        `/discord-data/tracker/saveUser?gameTracker=${this.gameTracker}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
+      const result = await response.json();
+      new PopUpMessage(
+        result.message || result.error,
+        result.message ? "ok" : "error"
+      );
+    } catch (error) {
+      new PopUpMessage("Failed to save user.", "error");
+    }
   }
+
   async initTracker() {
     showLoadingScreen();
-    await fetch(
-      `/discord-data/tracker/initTracker?gameTracker=${this.gameTracker}`,
-      {
-        method: "POST",
+    try {
+      const response = await fetch(
+        `/discord-data/tracker/initTracker?gameTracker=${this.gameTracker}`,
+        { method: "POST" }
+      );
+      const result = await response.json();
+      this.trackerIsEnabled = await this.isTrackerEnabled();
+      if (result.message && this.initTrackerDiv) {
+        this.initTrackerDiv.style.display = "block";
       }
-    )
-      .then((response) => response.json())
-      .then(async (response) => {
-        await this.isTrackerEnabled();
-        if (response.message) {
-          this.initTrackerDiv.style.display = "block";
-        }
-        new PopUpMessage(
-          response.message || response.error,
-          response.message ? "ok" : "error"
-        );
-      })
-      .catch((error) => {
-        console.log("error initialising tracker ", error);
-      });
+      new PopUpMessage(
+        result.message || result.error,
+        result.message ? "ok" : "error"
+      );
+    } catch (error) {
+      console.log("error initialising tracker ", error);
+      new PopUpMessage("Error initialising tracker.", "error");
+    }
     hideLoadingScreen();
   }
-  //getters
+
+  // Getters
   async isTrackerEnabled() {
     const serverId = await this.getServerId();
-    return fetch(`/discord-data/guild/tracker/isEnabled`, {
+    const response = await fetch(`/discord-data/guild/tracker/isEnabled`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         gameTracker: this.gameTracker,
         guildID: serverId,
       }),
-    })
-      .then((res) => res.json())
-      .then((data) => data.isEnabled);
+    });
+    const data = await response.json();
+    return data.isEnabled;
   }
+
   async isUserMod() {
-    return await fetch("/session/isMod")
-      .then((res) => res.json())
-      .then((data) => data.isMod);
+    const response = await fetch("/session/isMod");
+    const data = await response.json();
+    return data.isMod;
   }
+
   async getSteamAuthUser() {
-    return await fetch("/session/steamAuthUser")
-      .then((res) => res.json())
-      .then((data) => data.steamAuthUser);
+    const response = await fetch("/session/steamAuthUser");
+    const data = await response.json();
+    return data.steamAuthUser;
   }
+
   async getSteamUser() {
     return this.steamAuthUser;
   }
+
   async getIsTrackerEnabled() {
     return this.trackerIsEnabled;
   }
+
   async getServerId() {
-    return fetch("/session/serverPageId")
-      .then((res) => res.json())
-      .then((data) => data.serverPageId);
+    const response = await fetch("/session/serverPageId");
+    const data = await response.json();
+    return data.serverPageId;
   }
 }
