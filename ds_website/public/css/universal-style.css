@@ -174,3 +174,10 @@ button {
 .file-icon {
   font-size: 18px;
 }
+
+.login-btn{
+  color: white;
+  background-color: #0092ca;
+  padding: 10px;
+  border-radius: 10px;
+}

@@ -147,7 +147,13 @@ export default function isAuthenticated(req, res, next) {
     return res.redirect("/user-not-logged-in");
   }
 }
+app.get("/privacyPolicy", (req, res) => {
+  return res.sendFile(join(__dirname, "View/template/privacyPolicy.html"))
+});
 
+app.get("/termsOfUse", (req, res) => {
+  return res.sendFile(join(__dirname, "View/template/tnc.html"))
+})
 app.get("/status", (req, res) => {
   return res.sendFile(join(__dirname, "View/template/status.html"));
 });
