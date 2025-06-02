@@ -1,0 +1,27 @@
+.mainFeatureDiv {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.featureDiv {
+  margin: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  border: solid 2px #029FFC;
+  transition: 0.5s;
+}
+
+.featureDiv:hover{
+  background-color: white;
+  color: black;
+  transition: 0.s;
+}
+
+.banner {
+  width: 99vw;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
