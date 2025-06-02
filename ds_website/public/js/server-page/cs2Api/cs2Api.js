@@ -46,78 +46,80 @@ export default class Cs2Api {
     this.init();
   }
   async init() {
-    await this.fetchUserStatus();
-    await this.steamAuth();
     showLoadingScreen();
-    this.userShareTradeLink = await this.didUserShareTradeLink();
-    this.isTradeLinkConfigured = await this.getIsTradeLinkConfigured();
-    this.isShareWithFriendsConfigured =
-      await this.getIsShareWithFriendsConfigured();
-    this.isCs2ItemSharingConfigured =
-      await this.getIsCs2ItemSharingChannelConfigured();
-    await this.shareConfig(
-      "profileSharingChannel",
-      "#channel",
-      "shareWithFriendsChannel"
-    );
-    await this.shareConfig(
-      "tradeLinkSharingChannel",
-      ".tradeLinkChannel",
-      "tradeLinkChannel"
-    );
-    await this.shareConfig(
-      "cs2ItemSharingChannel",
-      ".itemShareChannel",
-      "itemShareChannel"
-    );
-    await this.setupChannelEditing(
-      this.isShareWithFriendsConfigured,
-      "profileSharingChannel",
-      "profileSetChannelBtn",
-      "#channel"
-    );
-    await this.setupChannelEditing(
-      this.isTradeLinkConfigured,
-      "tradeLinkSharingChannel",
-      "tradeLinkChannelBtn",
-      ".tradeLinkChannel"
-    );
-    await this.setupChannelEditing(
-      this.isCs2ItemSharingConfigured,
-      "cs2ItemSharingChannel",
-      "cs2ItemChannelBtn",
-      ".itemShareChannel"
-    );
-    if (this.isTradeLinkConfigured.error || this.isCs2ItemSharingConfigured.error || this.isShareWithFriendsConfigured.error) {
-      const initTrackerDiv = document.getElementById("initTrackerDiv");
-      const mainSteam = document.getElementById("main");
-      if (initTrackerDiv) {
-        initTrackerDiv.remove();
-      }
-      if (mainSteam) {
-        mainSteam.style.display = "none";
-      }
-    }
-    if (this.steamUser.steamAuthUser) {
-      await this.shareWithFriendsForm(
-        this.steamUser.steamAuthUser._json.steamid,
-        this.isShareWithFriendsConfigured
+    try {
+      await this.fetchUserStatus();
+      await this.steamAuth();
+      this.userShareTradeLink = await this.didUserShareTradeLink();
+      this.isTradeLinkConfigured = await this.getIsTradeLinkConfigured();
+      this.isShareWithFriendsConfigured =
+        await this.getIsShareWithFriendsConfigured();
+      this.isCs2ItemSharingConfigured =
+        await this.getIsCs2ItemSharingChannelConfigured();
+      await this.shareConfig(
+        "profileSharingChannel",
+        "#channel",
+        "shareWithFriendsChannel"
       );
-
-      await this.shareTradeLinkForm(
-        this.steamUser.steamAuthUser._json.steamid,
-        this.isTradeLinkConfigured
+      await this.shareConfig(
+        "tradeLinkSharingChannel",
+        ".tradeLinkChannel",
+        "tradeLinkChannel"
       );
-      if (!this.userShareTradeLink) {
-        const cs2InventoryHeader = document.getElementById("cs2-inventory-header");
-        cs2InventoryHeader.remove();
-      } else {
-        await this.createItemDisplay(this.steamUserCs2Inventory.descriptions);
-        await this.filterCs2Items();
+      await this.shareConfig(
+        "cs2ItemSharingChannel",
+        ".itemShareChannel",
+        "itemShareChannel"
+      );
+      await this.setupChannelEditing(
+        this.isShareWithFriendsConfigured,
+        "profileSharingChannel",
+        "profileSetChannelBtn",
+        "#channel"
+      );
+      await this.setupChannelEditing(
+        this.isTradeLinkConfigured,
+        "tradeLinkSharingChannel",
+        "tradeLinkChannelBtn",
+        ".tradeLinkChannel"
+      );
+      await this.setupChannelEditing(
+        this.isCs2ItemSharingConfigured,
+        "cs2ItemSharingChannel",
+        "cs2ItemChannelBtn",
+        ".itemShareChannel"
+      );
+      if (this.isTradeLinkConfigured.error || this.isCs2ItemSharingConfigured.error || this.isShareWithFriendsConfigured.error) {
+        const initTrackerDiv = document.getElementById("initTrackerDiv");
+        const mainBody = document.getElementById("main");
+        if (initTrackerDiv) {
+          initTrackerDiv.remove();
+        }
+        if (mainBody) {
+          mainBody.remove();
+        }
       }
+      if (this.steamUser.steamAuthUser) {
+        await this.shareWithFriendsForm(
+          this.steamUser.steamAuthUser._json.steamid,
+          this.isShareWithFriendsConfigured
+        );
 
+        await this.shareTradeLinkForm(
+          this.steamUser.steamAuthUser._json.steamid,
+          this.isTradeLinkConfigured
+        );
+        if (!this.userShareTradeLink) {
+          const cs2InventoryHeader = document.getElementById("cs2-inventory-header");
+          cs2InventoryHeader.remove();
+        } else if (this.steamUserCs2Inventory && Array.isArray(this.steamUserCs2Inventory.descriptions)) {
+          await this.createItemDisplay(this.steamUserCs2Inventory.descriptions);
+          await this.filterCs2Items();
+        }
+      }
+    } finally {
+      hideLoadingScreen();
     }
-    hideLoadingScreen();
   }
   async steamAuth() {
     const pathParts = window.location.pathname.split("/");
@@ -200,7 +202,6 @@ export default class Cs2Api {
   async didUserShareTradeLink() {
     const response = await fetch("/discord-data/tracker/steam/didUserShareTradeLink");
     const data = await response.json();
-    console.log(data.userProfile);
     if (data.userProfile) {
       return data.userProfile.tradeLink;
     }
@@ -262,7 +263,6 @@ export default class Cs2Api {
       const pageItems = data.slice(startIndex, endIndex);
 
       for (let i = 0; i < pageItems.length; i++) {
-        console.log(pageItems);
         const itemName = pageItems[i].market_name;
         const itemType = pageItems[i].type;
         const itemIconStr = pageItems[i].icon_url;
@@ -441,10 +441,18 @@ export default class Cs2Api {
     if (this.inventoryCache.has(cacheKey)) {
       return this.inventoryCache.get(cacheKey);
     }
+    const response = await fetch(
+      `/discord-data/api/steam/inventory?steamid=${steamid}&appid=${appid}&contextid=${contextid}`);
 
-    const data = await fetch(
-      `/discord-data/api/steam/inventory?steamid=${steamid}&appid=${appid}&contextid=${contextid}`
-    ).then((response) => response.json());
+    if (!response.ok) {
+      new PopUpMessage("Failed to fetch inventory. Your inventory might be private.");
+      return undefined;
+    }
+    const data = await response.json();
+    if (!data) {
+      new PopUpMessage("No inventory found. Please make sure your Steam inventory is public.", "error");
+      return undefined;
+    }
 
     this.inventoryCache.set(cacheKey, data);
     setTimeout(() => this.inventoryCache.delete(cacheKey), 3600 * 1000);
