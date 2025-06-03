@@ -16,7 +16,6 @@ export default async function addSpotifyBuddies(request, response) {
     const currentUserId = request.session.userId;
     const { playlistId, messageType, textChannel, editTextChannel, "spotifyBuddies[]": spotifyBuddies, inviteLink, serverInfo } = request.body;
     const queueCount = 0;
-    console.log(textChannel, editTextChannel);
     const notificationChannel = textChannel || editTextChannel;
 
     try {
@@ -46,7 +45,8 @@ export default async function addSpotifyBuddies(request, response) {
             playlistName,
             spotifyBuddies,
             messageType,
-            createdBy
+            createdBy,
+            inviteLink
         };
 
         //2.save json object to serverConfig.json in ds bot/model folder
@@ -86,7 +86,7 @@ async function createInitialNotification(userId, playlistId) {
         .setDescription(`To start things off, <@${userId}> add a song!`)
         .setThumbnail("https://i.imgur.com/A5y5wse.png")
         .setAuthor({
-            name: `Spotify Buddie Alert System`,
+            name: `Spotify Buddy Alert System`,
             iconURL: "https://i.imgur.com/98RyXhh.png",
         });
     const playlistLink = new ButtonBuilder()
@@ -144,15 +144,15 @@ function createInviteMessage(inviteLink, currentUserId, spotifyBuddies, notifica
     } else { notificationType = "Direct Message" }
     const embedBuilder = new EmbedBuilder()
         .setColor("#3BE477")
-        .setTitle("Invitation to be a buddie!")
+        .setTitle("Invitation to be a buddy!")
         .setDescription(`
-            You have been invited to collaborate in a spotfiy playlist by <@${currentUserId}> in the server ${serverInfo.guildData.name}\n
+            You have been invited to collaborate in a spotify playlist by <@${currentUserId}> in the server ${serverInfo.guildData.name}\n
             **Users in the playlist:**\n
             ${buddieList}\n
             Be ready to add a song! You will be notified by me via ${notificationType}`)
         .setThumbnail("https://i.imgur.com/A5y5wse.png")
         .setAuthor({
-            name: `Spotify Buddie Alert System`,
+            name: `Spotify Buddy Alert System`,
             iconURL: "https://i.imgur.com/98RyXhh.png",
         });
     const playlistLink = new ButtonBuilder()

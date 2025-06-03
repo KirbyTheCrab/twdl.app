@@ -41,11 +41,6 @@ export default class FetchSettingPages {
       script.type = "module";
       script.src = src;
       document.head.append(script);
-      script.onload = () => {
-        console.log("Script loaded");
-      };
-    } else {
-      console.log("Script already loaded");
     }
   }
 

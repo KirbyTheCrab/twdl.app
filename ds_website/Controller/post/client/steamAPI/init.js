@@ -15,7 +15,7 @@ export default async function cs2Init(request, response) {
 
   try {
     await saveToFile(data, `/cs2Tracker/${guildID}.json`);
-    return response.json({ message: "CS2 Tracker initialised" });
+    return response.json({ message: "CS2 Tracker initialized" });
   } catch (error) {
     console.log(error);
     return response.json({ error: `Something went wrong ${error}` });

@@ -40,7 +40,7 @@ export default async function removePlaylist(request, response) {
             try {
                 //save new data to file
                 await fs.writeFile(filePath, JSON.stringify(existingData, null, 2), "utf-8");
-                return response.json({ message: "Playlist removed successfullly" });
+                return response.json({ message: "Playlist removed successfully" });
             } catch (error) {
                 return response.json({ error: "Failed to remove playlist" })
             }
@@ -49,6 +49,6 @@ export default async function removePlaylist(request, response) {
         }
     } catch (error) {
         console.log(error);
-        return response.json({ error: "Something went wrong trying to remove the plalyist" })
+        return response.json({ error: "Something went wrong trying to remove the playlist" })
     }
 }

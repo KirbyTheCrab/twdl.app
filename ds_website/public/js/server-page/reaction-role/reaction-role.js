@@ -63,77 +63,80 @@ export default class ReactionRoles {
     const activeReactionRoles = data.parsedData;
     const table = document.getElementById("activeReactionRoleTbody");
     const tableDiv = document.getElementById("reactionRoleTableDiv");
-    if (activeReactionRoles.length === 0) {
+    if (activeReactionRoles && activeReactionRoles.length === 0) {
       tableDiv.style.display = "none";
     } else {
       tableDiv.style.display = "block";
     }
     table.innerHTML = "";
 
-    activeReactionRoles.forEach(async (role) => {
-      const dataRow = document.createElement("tr");
+    if (activeReactionRoles) {
+      activeReactionRoles.forEach(async (role) => {
+        const dataRow = document.createElement("tr");
 
-      // Create Delete/Edit buttons
-      const deleteBtn = document.createElement("button");
-      deleteBtn.type = "submit";
-      deleteBtn.textContent = "Delete";
+        // Create Delete/Edit buttons
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "submit";
+        deleteBtn.textContent = "Delete";
 
-      const editBtn = document.createElement("button");
-      editBtn.type = "submit";
-      editBtn.textContent = "Edit";
+        const editBtn = document.createElement("button");
+        editBtn.type = "submit";
+        editBtn.textContent = "Edit";
 
-      // Hidden input fields for form
-      const deleteData = document.createElement("input");
-      deleteData.type = "hidden";
-      deleteData.name = "deleteThisReactionRole";
-      deleteData.value = role["messageID"];
+        // Hidden input fields for form
+        const deleteData = document.createElement("input");
+        deleteData.type = "hidden";
+        deleteData.name = "deleteThisReactionRole";
+        deleteData.value = role["messageID"];
 
-      const editData = document.createElement("input");
-      editData.type = "hidden";
-      editData.name = "editThisReactionRole";
-      editData.value = role["messageID"];
+        const editData = document.createElement("input");
+        editData.type = "hidden";
+        editData.name = "editThisReactionRole";
+        editData.value = role["messageID"];
 
-      // Forms
-      const deleteForm = document.createElement("form");
-      deleteForm.classList.add("deleteActiveReactionRole");
-      deleteForm.append(deleteBtn, deleteData);
+        // Forms
+        const deleteForm = document.createElement("form");
+        deleteForm.classList.add("deleteActiveReactionRole");
+        deleteForm.append(deleteBtn, deleteData);
 
-      const editForm = document.createElement("form");
-      editForm.classList.add("editActiveReactionRole");
-      editForm.append(editBtn, editData);
+        const editForm = document.createElement("form");
+        editForm.classList.add("editActiveReactionRole");
+        editForm.append(editBtn, editData);
 
-      // Table cells
-      const channelMap = Object.fromEntries(
-        this.channels.textChannels.map((c) => [c.id, c.name])
-      );
-      const roleMap = Object.fromEntries(
-        this.roles.roles.map((r) => [r.id, r.name])
-      );
+        // Table cells
+        const channelMap = Object.fromEntries(
+          this.channels.textChannels.map((c) => [c.id, c.name])
+        );
+        const roleMap = Object.fromEntries(
+          this.roles.roles.map((r) => [r.id, r.name])
+        );
 
-      ["favcolor", "channel", "title", "emoji", "role"].forEach((key) => {
-        const cell = document.createElement("td");
-        cell.textContent =
-          key === "channel"
-            ? channelMap[role[key]] || "Unknown Channel"
-            : key === "role"
-            ? roleMap[role[key]] || "Unknown Role"
-            : key === "favcolor"
-            ? (cell.style.backgroundColor = `${role[key]}`)
-            : role[key];
-        dataRow.appendChild(cell);
+        ["favcolor", "channel", "title", "emoji", "role"].forEach((key) => {
+          const cell = document.createElement("td");
+          cell.textContent =
+            key === "channel"
+              ? channelMap[role[key]] || "Unknown Channel"
+              : key === "role"
+                ? roleMap[role[key]] || "Unknown Role"
+                : key === "favcolor"
+                  ? (cell.style.backgroundColor = `${role[key]}`)
+                  : role[key];
+          dataRow.appendChild(cell);
+        });
+
+        // Append forms to table row
+        const deleteFormCell = document.createElement("td");
+        deleteFormCell.appendChild(deleteForm);
+
+        const editFormCell = document.createElement("td");
+        editFormCell.appendChild(editForm);
+
+        dataRow.append(deleteFormCell, editFormCell);
+        table.appendChild(dataRow);
       });
+      await this.removeActiveReactionRole();
+    }
 
-      // Append forms to table row
-      const deleteFormCell = document.createElement("td");
-      deleteFormCell.appendChild(deleteForm);
-
-      const editFormCell = document.createElement("td");
-      editFormCell.appendChild(editForm);
-
-      dataRow.append(deleteFormCell, editFormCell);
-      table.appendChild(dataRow);
-    });
-    await this.removeActiveReactionRole();
   }
   async populateRoleSelect() {
     this.roles = await getRoles();

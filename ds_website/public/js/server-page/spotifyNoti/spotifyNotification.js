@@ -218,7 +218,7 @@ export default class SpotifyNotification {
                             const username = await this.getUsername(buddie);
                             if (buddie === activeBuddie) {
                                 span.classList.add("active-buddie");
-                                span.title = "This buddie is next to add a song to the playlist"
+                                span.title = "This buddy is next to add a song to the playlist"
 
                             }
                             span.id = "span-buddie";

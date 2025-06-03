@@ -136,8 +136,8 @@ export default class Tracker {
         result.message ? "ok" : "error"
       );
     } catch (error) {
-      console.log("error initialising tracker ", error);
-      new PopUpMessage("Error initialising tracker.", "error");
+      console.log("error initializing tracker ", error);
+      new PopUpMessage("Error initializing tracker.", "error");
     }
     hideLoadingScreen();
   }

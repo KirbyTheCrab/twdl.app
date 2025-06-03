@@ -80,7 +80,7 @@ client.on("ready", async () => {
   await commandCreater.setCommands();
   await initialiseForbiddenList();
   //Spotify Buddie system polling 
-  //setInterval(pollEveryServer, 300000); //every 5 minutes
+  setInterval(pollEveryServer, 300000); //every 5 minutes
   pollEveryServer();
   console.log(`Logged in as ${client.user.tag}!`);
 });

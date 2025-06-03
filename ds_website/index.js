@@ -61,9 +61,6 @@ app.use(helmet.hsts({
 app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.noSniff());
 app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
-
-
-
 app.use("/Model", express.static(join(__dirname, "Model/")));
 app.use(express.static(join(__dirname, "public")));
 app.use(express.static(join(__dirname, "src")));

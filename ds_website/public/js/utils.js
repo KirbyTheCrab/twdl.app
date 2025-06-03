@@ -41,7 +41,6 @@ export async function populateChannelSelect() {
   // const channelSelection = document.getElementById("channel");
   const channelSelections = document.querySelectorAll('#channel, #edit-channel');
   channelSelections.forEach((channelSelection) => {
-    console.log(channelSelection);
     const channelsData = channels.textChannels;
     for (let i = 0; i < channelsData.length; i++) {
       if (channelsData[i].type == "0") {

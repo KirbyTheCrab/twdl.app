@@ -82,7 +82,7 @@ export default class r6Tracker {
         );
       })
       .catch((error) => {
-        console.log("error initialising r6 tracker ", error);
+        console.log("error initializing r6 tracker ", error);
       });
   }
   async isTrackerEnabled() {

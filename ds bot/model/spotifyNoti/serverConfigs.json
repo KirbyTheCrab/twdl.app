@@ -7,6 +7,27 @@
     {
       "serverId": "947223336130342962",
       "playlists": []
+    },
+    {
+      "serverId": "691685252623499374",
+      "playlists": [
+        {
+          "playlistId": "2P0ZH73ZbCTsunRdVqkvwL",
+          "notificationChannel": "1379143261016293569",
+          "queueCount": 0,
+          "playlistSnapshot": "AAAADVnF048QBsQvNBTiCBljGk9zoC+M",
+          "playlistName": "TWDL - Test 4",
+          "spotifyBuddies": [
+            "217960750872788993",
+            "579195024995123211",
+            "587705207258087425",
+            "677665377211252766"
+          ],
+          "messageType": "tc",
+          "createdBy": "587705207258087425",
+          "inviteLink": "https://open.spotify.com/playlist/2P0ZH73ZbCTsunRdVqkvwL?si=6173104824844e43&pt=d272e39e694e50647ad6d791f710de33"
+        }
+      ]
     }
   ]
 }
