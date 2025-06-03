@@ -13,8 +13,8 @@ export function createSteamStrategy(serverId) {
           realm: `https://twdl.app`,
           apiKey: process.env.SteamAPIKey,
         },
-        function (identifier, profile, done, err) {
-          return done(err, profile);
+        function (identifier, profile, done) {
+          return done(null, profile);
         }
       )
     );
@@ -24,6 +24,6 @@ export function createSteamStrategy(serverId) {
 
 // Serialize and Deserialize Users
 passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
+passport.deserializeUser((obj, done) => done(null, obj));
 
 export default passport;

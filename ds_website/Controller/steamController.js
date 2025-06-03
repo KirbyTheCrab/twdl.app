@@ -2,7 +2,7 @@ import passport, { createSteamStrategy } from "../config/passport.js";
 
 export function steamLogin(req, res, next) {
   const serverId = req.params.serverId;
-  createSteamStrategy(serverId); 
+  createSteamStrategy(serverId);
   passport.authenticate(`steam-${serverId}`)(req, res, next);
 }
 

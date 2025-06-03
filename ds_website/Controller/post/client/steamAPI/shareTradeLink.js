@@ -16,7 +16,7 @@ export default async function shareLinkTrade(request, response) {
     const channel = await server.channels.fetch(channelId);
     const isSaved = await saveTradeLink(tradeLinkValue, member.user.id);
     if (!isSaved.success) {
-      return response.json({ error: "An error occoured saving the trade link" })
+      return response.json({ error: "An error occurred saving the trade link" })
     }
 
     const embedBuilder = new EmbedBuilder()

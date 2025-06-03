@@ -42,8 +42,6 @@ export default class WelcomeMessage {
     const data = await this.fetchActiveWelcomeMessage();
     const activeWelcomeMessage = data.parsedData;
     const table = document.getElementById("activeWelcomeMessage");
-    console.log(activeWelcomeMessage);
-
     if (
       Array.isArray(activeWelcomeMessage) &&
       activeWelcomeMessage.length == 1

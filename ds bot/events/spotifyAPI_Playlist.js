@@ -22,7 +22,7 @@ export default class SpotifyBuddieSystem {
   }
 
   async pollPlaylist() {
-    const { playlistId, notificationChannel, queueCount, spotifyBuddies, playlistSnapshot, messageType } = this.playlistConfig;
+    const { playlistId, notificationChannel, queueCount, spotifyBuddies, playlistSnapshot, messageType, inviteLink } = this.playlistConfig;
     try {
       if (!this.spotifyApi.getAccessToken()) {
         await this.authenticate();
@@ -44,7 +44,7 @@ export default class SpotifyBuddieSystem {
       // Check if the snapshot has changed
       if (newSnapshot !== playlistSnapshot) { //check if snapshot is the same as last time (no songs added or a song has been added if song has been added)
         let updatedQueueCount;
-        //if queue count is equal to spotify buddie array size -> reset queue count and save to file
+        //if queue count is equal to spotify buddy array size -> reset queue count and save to file
         if (queueCount >= spotifyBuddies.length - 1) {
           updatedQueueCount = 0;
         } else {
@@ -57,11 +57,12 @@ export default class SpotifyBuddieSystem {
         this.playlistConfig.queueCount = updatedQueueCount; // Update in-memory queue count
 
         const nextInQueue = spotifyBuddies[updatedQueueCount];
-        const message = await this.createMessage(nextInQueue, playlistId);
+        const message = await this.createMessage(nextInQueue, playlistId, inviteLink);
 
         if (messageType == "tc") {
           await this.deleteAllmessages(notificationChannel);
         }
+        await this.sendDiscordMessage(`<@${nextInQueue}>`, messageType, nextInQueue, notificationChannel);
         await this.sendDiscordMessage(message, messageType, nextInQueue, notificationChannel);
       }
     } catch (error) {
@@ -165,20 +166,20 @@ export default class SpotifyBuddieSystem {
     }
 
   }
-  async createMessage(nextInQueue, playlistId) {
+  async createMessage(nextInQueue, playlistId, inviteLink) {
     const embedBuilder = new EmbedBuilder()
       .setColor("#3BE477")
       .setTitle("New Alert!")
       .setDescription(`A new song has been added, <@${nextInQueue}> you are next up!`)
       .setThumbnail("https://i.imgur.com/A5y5wse.png")
       .setAuthor({
-        name: `Spotify Buddie Alert System`,
-        iconURL: "https://i.imgur.com/98RyXhh.png",
+        name: `Spotify Buddy Alert System`,
+        iconURL: "https://i.imgur.com/lyHaJPc.png",
       });
     const playlistLink = new ButtonBuilder()
       .setLabel("Add a song!")
       .setStyle(ButtonStyle.Link)
-      .setURL(`https://open.spotify.com/playlist/${playlistId}`)
+      .setURL(`${inviteLink}`)
 
     const row = new ActionRowBuilder().addComponents(playlistLink);
     return { embeds: [embedBuilder], components: [row] };

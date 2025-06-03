@@ -108,13 +108,13 @@ async function handleCustomStatus(newMember, status) {
 }
 async function initialiseForbiddenList() {
   forbiddenActivityList = JSON.parse(jsonDataRead);
-  for (const acitivity of forbiddenActivityList) {
-    console.log(`Banned Activity: ${acitivity} has been initialised`);
+  for (const activity of forbiddenActivityList) {
+    console.log(`Banned Activity: ${activity} has been initialized`);
   }
 }
 /**
  * Handle actions for users with different number of warnings
- * @param {*} newMember memeber to handle
+ * @param {*} newMember member to handle
  * @param {*} status activity.state
  */
 async function handleWarnings(newMember, status) {

@@ -267,3 +267,7 @@ li {
 .buddie-list {
   overflow-y: scroll;
 }
+
+.ban-btn{
+  width: 10%;
+}

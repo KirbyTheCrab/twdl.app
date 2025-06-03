@@ -50,6 +50,10 @@ export default class Cs2Api {
     try {
       await this.fetchUserStatus();
       await this.steamAuth();
+    } catch (error) {
+      console.error(error);
+    }
+    try {
       this.userShareTradeLink = await this.didUserShareTradeLink();
       this.isTradeLinkConfigured = await this.getIsTradeLinkConfigured();
       this.isShareWithFriendsConfigured =

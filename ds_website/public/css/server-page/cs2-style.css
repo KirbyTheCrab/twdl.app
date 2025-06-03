@@ -11,8 +11,11 @@
   text-align: center;
   border-radius: 10px;
   height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.item > img {
+.item>img {
   width: 100px;
 }
