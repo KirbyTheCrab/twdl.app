@@ -13,7 +13,7 @@
     <script type="module" src="/js/themeSettings.js"></script>
   </head>
 
-  <body>
+  <body class="server-page-layout">
     <header>
       <script type="module" src="/js/fetchNavBar.js"></script>
       <div id="navbar"></div>
@@ -71,8 +71,12 @@
 
       <section class="admin-dynamic-container">
         <div id="adminPanel" class="client-configuration-container">
+          <div class="admin-panel-head">
+            <h2>Admin Settings</h2>
+            <p>Select a tool to load it in the workspace below.</p>
+          </div>
+
           <ul id="client-configuration" class="client-configuration">
-            <h2>Admin Panel</h2>
             <a id="clientSettings"><li>Client Settings</li></a>
             <a id="serverSettings"><li>Server Settings</li></a>
             <a id="reactionRoles"><li>Reaction Roles</li></a>
@@ -83,7 +87,13 @@
           </ul>
         </div>
 
-        <div id="dynamic-page" class="dynamic-page"></div>
+        <div class="dynamic-page-shell">
+          <div class="dynamic-page-head">
+            <h2>Workspace</h2>
+            <p>Interactive configuration appears here after you choose a section.</p>
+          </div>
+          <div id="dynamic-page" class="dynamic-page"></div>
+        </div>
       </section>
     </main>
 

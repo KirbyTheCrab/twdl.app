@@ -6,7 +6,23 @@
     },
     {
       "serverId": "947223336130342962",
-      "playlists": []
+      "playlists": [
+        {
+          "playlistId": "784e902H0FktUd3yWB80a7",
+          "notificationChannel": "1342138447774875688",
+          "queueCount": 1,
+          "playlistSnapshot": "AAAABIAt9vfjA9e+1SCwbgrSgU9z9Ht1",
+          "playlistName": "TWDL - Test 1",
+          "spotifyBuddies": [
+            "1300402017688358912",
+            "587705207258087425",
+            "976776356123783188"
+          ],
+          "messageType": "tc",
+          "createdBy": "587705207258087425",
+          "inviteLink": "https://open.spotify.com/playlist/784e902H0FktUd3yWB80a7?si=b9ca325c657d4fd4&pt=ee0bbbf04337bbf49398ff50b2f8f5ac"
+        }
+      ]
     },
     {
       "serverId": "691685252623499374",

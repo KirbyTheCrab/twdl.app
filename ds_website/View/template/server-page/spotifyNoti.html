@@ -9,70 +9,83 @@
 </div>
 
 <header id="enableSpotifyNotiDiv" class="newSpotifyFormHeader">
-    <form id="spotifyPlaylistNotificationChannel">
+    <div class="spotify-modal-head">
         <h3>Spotify Buddy Alert System</h3>
+        <input type="button" id="closePlaylistCreator" class="spotify-modal-close" value="Close">
+    </div>
+
+    <form id="spotifyPlaylistNotificationChannel" class="spotify-playlist-form">
         <div class="fields">
             <input type="text" id="playlistId" name="playlistId" required placeholder="Playlist ID" />
             <input type="text" id="inviteLink" name="inviteLink" required placeholder="Invite Link" />
 
-            <input type="radio" value="dm" name="messageType" id="dm">
-            <label for="dm">Direct Message</label><br>
-
-            <input type="radio" value="tc" name="messageType" id="tc">
-            <label for="tc">Text Channel</label>
+            <div class="message-type-row">
+                <label class="message-type-option" for="dm">
+                    <input type="radio" value="dm" name="messageType" id="dm">
+                    <span>Direct Message</span>
+                </label>
+                <label class="message-type-option" for="tc">
+                    <input type="radio" value="tc" name="messageType" id="tc">
+                    <span>Text Channel</span>
+                </label>
+            </div>
 
             <select name="textChannel" id="channel" style="display: none;">
                 <option value="" disabled selected>Select text channel</option>
             </select>
 
-
             <ul id="spotify-buddies-ul" class="spotify-buddies-ul">
                 <div class="server-data-list-header">
                     <h1>Members</h1>
                     <label for="Search"><input class="search-bar spotify-buddie-search" id="spotify-buddie-search"
-                            type="text" placeholder="🔍 Search for user" />
+                            type="text" placeholder="Search for user" />
                     </label>
                 </div>
             </ul>
             <input type="submit" value="Add Playlist" id="actionBtn">
         </div>
     </form>
-    <input type="submit" id="closePlaylistCreator" value="Close">
 </header>
 
 <header id="enableEditSpotifyNotiDiv" class="newSpotifyFormHeader">
-    <form id="editSpotifyPlaylist">
-        <h3>Spotify Buddy Alert System - </h3>
+    <div class="spotify-modal-head">
+        <h3>Spotify Buddy Alert System</h3>
+        <input type="button" id="closeEditPlaylistCreator" class="spotify-modal-close" value="Close">
+    </div>
+
+    <form id="editSpotifyPlaylist" class="spotify-playlist-form">
         <h3 id="playlistName"></h3>
 
         <div class="fields">
-
             <input type="text" id="edit-playlistId" name="playlistId" required placeholder="Playlist ID" />
             <input type="text" id="edit-inviteLink" name="inviteLink" required placeholder="Invite Link" />
 
-            <input type="radio" value="dm" name="messageType" id="edit-dm">
-            <label for="dm">Direct Message</label><br>
-
-            <input type="radio" value="tc" name="messageType" id="edit-tc">
-            <label for="tc">Text Channel</label>
+            <div class="message-type-row">
+                <label class="message-type-option" for="edit-dm">
+                    <input type="radio" value="dm" name="messageType" id="edit-dm">
+                    <span>Direct Message</span>
+                </label>
+                <label class="message-type-option" for="edit-tc">
+                    <input type="radio" value="tc" name="messageType" id="edit-tc">
+                    <span>Text Channel</span>
+                </label>
+            </div>
 
             <select name="editTextChannel" id="edit-channel" style="display: none;">
                 <option value="" disabled selected>Select text channel</option>
             </select>
 
-
             <ul id="edit-spotify-buddies-ul" class="spotify-buddies-ul">
                 <div class="server-data-list-header">
                     <h1>Members</h1>
                     <label for="Search"><input class="search-bar spotify-buddie-search" id="spotify-buddie-search"
-                            type="text" placeholder="🔍 Search for user" />
+                            type="text" placeholder="Search for user" />
                     </label>
                 </div>
             </ul>
             <input type="submit" value="Edit Playlist" id="actionBtn">
         </div>
     </form>
-    <input type="submit" id="closeEditPlaylistCreator" value="Close">
 </header>
 
 <div id="confirmationDIV" style="display: none" class="confirmation">
