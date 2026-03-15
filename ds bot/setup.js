@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
+import discord_pkg from "discord.js"
 dotenv.config(); // Load environment variables
 
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { Client, GatewayIntentBits, Events, Routes } from "discord.js";
+const { Client, GatewayIntentBits, Events, Routes } = discord_pkg
 
 // Create __filename and __dirname
 const __filename = fileURLToPath(import.meta.url);

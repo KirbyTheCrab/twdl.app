@@ -1,5 +1,6 @@
 import client from "../../../../../ds bot/main.js";
-import { EmbedBuilder } from "discord.js";
+import discord_pkg from "discord.js"
+const { EmbedBuilder } = discord_pkg
 
 import fs from "fs-extra";
 import path from "path";

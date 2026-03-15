@@ -4,10 +4,13 @@
     <title>Dashboard</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/js/themeBootstrap.js"></script>
     <link rel="stylesheet" href="/css/dashboard-style.css" />
     <link rel="stylesheet" href="/css/universal-style.css" />
+    <link rel="stylesheet" href="/css/themes.css" />
     <script type="module" src="/js/dashboard/onWindowLoad.js"></script>
     <script type="module" src="/js/fetchNavBar.js"></script>
+    <script type="module" src="/js/themeSettings.js"></script>
   </head>
 
   <body>
@@ -17,8 +20,14 @@
     <div id="loading-screen">
       <p>Loading, please wait...</p>
     </div>
-    <h2>Servers</h2>
-    <div id="main-content" class="main-content"></div>
+    <main>
+      <section class="dashboard-title-wrap">
+        <p class="dashboard-kicker">Server Access</p>
+        <h1>Your Discord Servers</h1>
+        <p>Configure the communities where TWDL is installed, or invite it where you have admin rights.</p>
+      </section>
+      <section id="main-content" class="main-content"></section>
+    </main>
 
     <footer>
       <script type="module" src="/js/fetchFooter.js"></script>

@@ -3,7 +3,10 @@ import express from "express";
 import session from "express-session";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { promises as fs } from "node:fs";
 import dotenv from "dotenv";
+import crypto from "node:crypto";
+import client from "../ds bot/main.js";
 // import mysql from "mysql";
 import multer from "multer";
 import passport from "./config/passport.js";
@@ -26,9 +29,42 @@ import discordRoute_POST from "./Routes/post/discordRouter.js";
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
+const isProduction = process.env.NODE_ENV === "production";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const webProcessStartedAt = Date.now();
+
+async function countJsFilesRecursive(directoryPath) {
+  try {
+    const entries = await fs.readdir(directoryPath, { withFileTypes: true });
+    let total = 0;
+
+    for (const entry of entries) {
+      const fullPath = join(directoryPath, entry.name);
+      if (entry.isDirectory()) {
+        total += await countJsFilesRecursive(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith(".js")) {
+        total += 1;
+      }
+    }
+
+    return total;
+  } catch {
+    return 0;
+  }
+}
+
+function getBotMemberEstimate() {
+  try {
+    return client.guilds.cache.reduce(
+      (total, guild) => total + (guild.memberCount || 0),
+      0
+    );
+  } catch {
+    return 0;
+  }
+}
 // const db_connection = mysql.createConnection({
 //   host: process.env.DB_HOST,
 //   user: process.env.DB_USER,
@@ -37,6 +73,7 @@ const __dirname = dirname(__filename);
 // });
 
 multer({ dest: "uploads/" });
+app.set("trust proxy", 1);
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -68,15 +105,22 @@ app.use("/template", express.static(join(__dirname, "View/template")));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    resave: true,
-    saveUninitialized: true
+    resave: false,
+    saveUninitialized: false,
+    name: "twdl.sid",
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: isProduction,
+      maxAge: 1000 * 60 * 60 * 24,
+    },
   })
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 //discord-data route
-app.use("/discord-data", discordRoute_GET);
-app.use("/discord-data", discordRoute_POST);
+app.use("/discord-data", isAuthenticated, discordRoute_GET);
+app.use("/discord-data", isAuthenticated, discordRoute_POST);
 
 //session route
 app.use("/session", sessionRoute_GET);
@@ -88,7 +132,6 @@ app.use(steamAuthRoutes);
 
 //App Get
 app.get("/", (req, res) => {
-  req.session.isLoggedIn = false;
   res.sendFile(join(__dirname, "View/index.html"));
 });
 
@@ -97,30 +140,46 @@ app.get("/inspect-item", (req, res) => {
 })
 
 app.get("/auth/discord", async (req, res) => {
-  req.session.isLoggedIn = true;
-
-  const data = new URLSearchParams({
-    client_id: process.env.CLIENT_ID,
-    client_secret: process.env.CLIENT_SECRET,
-    grant_type: "authorization_code",
-    code: req.query.code,
-    redirect_uri: "https://twdl.app/auth/discord",
-  });
-
-  const response = await fetch("https://discord.com/api/oauth2/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: data,
-  });
-  const json = await response.json();
-  if (!json.access_token) {
-    return res.status(400).send("Failed to retrieve access token.");
+  const code = req.query.code;
+  if (typeof code !== "string" || !code.length) {
+    return res.status(400).send("Invalid authorization code.");
   }
-  req.session.accessToken = json.access_token;
-  req.session.tokenType = json.token_type;
-  req.session.isLoggedIn = true;
 
-  return res.redirect("/dashboard");
+  try {
+    const data = new URLSearchParams({
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: "http://localhost:53134/auth/discord",
+    });
+
+    const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: data,
+    });
+
+    const json = await tokenResponse.json();
+    if (!json.access_token) {
+      return res.status(400).send("Failed to retrieve access token.");
+    }
+
+    req.session.regenerate((error) => {
+      if (error) {
+        return res.status(500).send("Failed to start user session.");
+      }
+      req.session.accessToken = json.access_token;
+      req.session.tokenType = json.token_type;
+      req.session.isLoggedIn = true;
+      req.session.isDataFetched = false;
+      req.session.oauthNonce = crypto.randomUUID();
+      return res.redirect("/dashboard");
+    });
+  } catch (error) {
+    console.error("Discord OAuth callback failed", error);
+    return res.status(500).send("Unable to complete login right now.");
+  }
 });
 
 app.get("/dashboard", isAuthenticated, (req, res) => {
@@ -155,9 +214,47 @@ app.get("/status", (req, res) => {
   return res.sendFile(join(__dirname, "View/template/status.html"));
 });
 
+app.get("/api/status/metrics", async (req, res) => {
+  const [commandCount, eventCount] = await Promise.all([
+    countJsFilesRecursive(join(__dirname, "../ds bot/commands")),
+    countJsFilesRecursive(join(__dirname, "../ds bot/events")),
+  ]);
+
+  const websiteUptimeSeconds = Math.floor(process.uptime());
+  const botUptimeSeconds =
+    typeof client.uptime === "number" ? Math.floor(client.uptime / 1000) : null;
+  const memory = process.memoryUsage();
+
+  const payload = {
+    generatedAt: new Date().toISOString(),
+    website: {
+      online: true,
+      uptimeSeconds: websiteUptimeSeconds,
+      processStartedAt: new Date(webProcessStartedAt).toISOString(),
+      nodeVersion: process.version,
+      platform: `${process.platform}/${process.arch}`,
+      memoryRssMb: Number((memory.rss / 1024 / 1024).toFixed(1)),
+      heapUsedMb: Number((memory.heapUsed / 1024 / 1024).toFixed(1)),
+    },
+    bot: {
+      online: typeof client.isReady === "function" ? client.isReady() : Boolean(client.readyAt),
+      uptimeSeconds: botUptimeSeconds,
+      latencyMs: Number.isFinite(client.ws?.ping) ? client.ws.ping : null,
+      guildCount: client.guilds.cache.size,
+      memberCount: getBotMemberEstimate(),
+      cachedUserCount: client.users.cache.size,
+      commandCount,
+      eventCount,
+    },
+  };
+
+  return res.json(payload);
+});
+
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/");
+    res.clearCookie("twdl.sid");
+    return res.redirect("/");
   });
 });
 

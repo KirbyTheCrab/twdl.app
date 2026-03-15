@@ -1,5 +1,6 @@
 import client from "../../../../../ds bot/main.js";
-import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import discord_pkg from "discord.js"
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = discord_pkg
 
 export default async function shareItem(request, response) {
   const { channelId, itemData } = request.body;
@@ -26,7 +27,7 @@ export default async function shareItem(request, response) {
     const inspectLink = new ButtonBuilder()
       .setLabel("Inspect item in game")
       .setStyle(ButtonStyle.Link)
-      .setURL(`https://twdl.app/inspect-item?link=${encodeURIComponent(itemData.inspectInGameLink)}`)
+      .setURL(`http://localhost:53134/inspect-item?link=${encodeURIComponent(itemData.inspectInGameLink)}`)
 
     const itemTradeLink = `${itemData.tradeLink}/${itemData.assetId}/&contextid=2&appid=730`
     const tradeItem = new ButtonBuilder()

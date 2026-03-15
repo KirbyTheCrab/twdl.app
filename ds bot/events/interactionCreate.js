@@ -1,4 +1,5 @@
-import { Events } from "discord.js";
+import discord_pkg from "discord.js"
+const { Events } = discord_pkg
 
 export const name = Events.InteractionCreate;
 export async function execute(interaction) {

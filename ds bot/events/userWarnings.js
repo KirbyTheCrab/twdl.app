@@ -1,117 +1,135 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const jsonFilePath = join(__dirname, '..', 'json', 'forbiddenActivityList.json');
-const jsonDataRead = readFileSync(jsonFilePath, 'utf-8');
+const forbiddenListPath = join(__dirname, "..", "json", "forbiddenActivityList.json");
+const warningListPath = join(__dirname, "..", "json", "userWarning.json");
 
 const listOfUsers = {};
-
 let forbiddenActivityList = [];
-forbiddenActivityList = JSON.parse(jsonDataRead);
+
+function readJsonFile(path, fallback) {
+  try {
+    return JSON.parse(readFileSync(path, "utf-8"));
+  } catch (error) {
+    console.error(`Failed to read JSON file at ${path}`, error);
+    return fallback;
+  }
+}
+
+function writeJsonFile(path, data) {
+  try {
+    writeFileSync(path, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error(`Failed to write JSON file at ${path}`, error);
+  }
+}
+
+function loadWarnings() {
+  const warnings = readJsonFile(warningListPath, {});
+  return typeof warnings === "object" && warnings !== null ? warnings : {};
+}
+
+function saveWarnings(warnings) {
+  writeJsonFile(warningListPath, warnings);
+}
 
 /**
  * Get and validate user activities (discord embed)
  * @param {*} newMember user
  */
 async function getUserDiscordActivity(newMember) {
-  if (newMember.user.bot) return;
-  const activityList = newMember.member.presence.activities;
-  if (activityList.length > 0) {
-    for (const activity of activityList) {
-      const activityName = activity.name;
-      // const activityState = activity.state;
-      // const activityEmoji = activity.emoji;
-      let found = false;
-      for (const forbiddenActivity of forbiddenActivityList) {
-        if (
-          activityName.includes(forbiddenActivity) &&
-          newMember.user.username === "toad1018"
-        ) {
-          await handleWarnings(newMember, activity.state);
-        }
+  if (!newMember || newMember.user?.bot) {
+    return;
+  }
+
+  const activityList = newMember.presence?.activities || [];
+  if (!activityList.length) {
+    return;
+  }
+
+  for (const activity of activityList) {
+    const activityName = (activity.name || "").toLowerCase();
+    for (const forbiddenActivity of forbiddenActivityList) {
+      if (activityName.includes(String(forbiddenActivity).toLowerCase())) {
+        await handleWarnings(newMember, activity.state || activity.name || "unknown activity");
+        return;
       }
     }
   }
 }
+
 async function removeActivityFromList(newActivity, interaction) {
-  const jsonObject = JSON.parse(jsonDataRead);
-  let found = false;
-  if (jsonObject.length > 0) {
-    for (const activity of jsonObject) {
-      if (newActivity.includes(activity)) {
-        found = true;
-      }
-    }
-    if (found) {
-      await interaction.reply(`${newActivity} has been found and removed`);
-      removeFromForbiddenActivityList(newActivity);
-      saveForbiddenActivityList();
-    } else {
-      await interaction.reply(
-        `${newActivity} was not found in the list try again`
-      );
-    }
-  } else {
-    await interaction.reply(`The forbidden activity list is empty`);
+  const normalizedActivity = String(newActivity || "").trim();
+  if (!normalizedActivity) {
+    await interaction.reply("Please provide a valid activity name.");
+    return;
   }
-}
-function removeFromForbiddenActivityList(elementsToRemove) {
-  const filteredList = forbiddenActivityList.filter(
-    (activity) => activity !== elementsToRemove
+
+  const found = forbiddenActivityList.some(
+    (activity) => activity.toLowerCase() === normalizedActivity.toLowerCase()
   );
-  forbiddenActivityList.splice(
-    0,
-    forbiddenActivityList.length,
-    ...filteredList
-  );
-}
-async function addToForbiddenActivityList(newActivity, interaction) {
-  const jsonObject = JSON.parse(jsonDataRead);
-  if (jsonObject.length > 0) {
-    let found = false;
-    for (const activity of jsonObject) {
-      if (newActivity.includes(activity)) {
-        found = true;
-      }
-    }
-    if (found) {
-      await interaction.reply("This activity already exists, try another one!");
-    } else {
-      forbiddenActivityList.push(newActivity);
-      saveForbiddenActivityList();
-      await interaction.reply(
-        `${newActivity} was added to the forbidden activity list`
-      );
-    }
-  } else {
-    await interaction.reply(
-      `${newActivity} was added to the forbidden activity list`
-    );
-    forbiddenActivityList.push(newActivity);
+
+  if (found) {
+    removeFromForbiddenActivityList(normalizedActivity);
     saveForbiddenActivityList();
+    await interaction.reply(`${normalizedActivity} has been found and removed`);
+  } else {
+    await interaction.reply(`${normalizedActivity} was not found in the list try again`);
   }
 }
+
+function removeFromForbiddenActivityList(activityToRemove) {
+  const filteredList = forbiddenActivityList.filter(
+    (activity) => activity.toLowerCase() !== String(activityToRemove).toLowerCase()
+  );
+  forbiddenActivityList.splice(0, forbiddenActivityList.length, ...filteredList);
+}
+
+async function addToForbiddenActivityList(newActivity, interaction) {
+  const normalizedActivity = String(newActivity || "").trim();
+  if (!normalizedActivity) {
+    await interaction.reply("Please provide a valid activity name.");
+    return;
+  }
+
+  const found = forbiddenActivityList.some(
+    (activity) => activity.toLowerCase() === normalizedActivity.toLowerCase()
+  );
+
+  if (found) {
+    await interaction.reply("This activity already exists, try another one!");
+    return;
+  }
+
+  forbiddenActivityList.push(normalizedActivity);
+  saveForbiddenActivityList();
+  await interaction.reply(`${normalizedActivity} was added to the forbidden activity list`);
+}
+
 /**
  * Get and validate user activities (custom status)
  * @param {*} newMember
  * @param {*} status
  */
 async function handleCustomStatus(newMember, status) {
-  const customStatusText = status.state;
-  // console.log(newMember.user.username);
-  if (customStatusText.includes("anime" || "genshin" || "league of legends")) {
-    await handleWarnings(newMember, status);
+  const customStatusText = (status?.state || "").toLowerCase();
+  const bannedKeywords = ["anime", "genshin", "league of legends"];
+  if (bannedKeywords.some((keyword) => customStatusText.includes(keyword))) {
+    await handleWarnings(newMember, status?.state || "custom status");
   }
 }
+
 async function initialiseForbiddenList() {
-  forbiddenActivityList = JSON.parse(jsonDataRead);
+  forbiddenActivityList = readJsonFile(forbiddenListPath, []);
   for (const activity of forbiddenActivityList) {
     console.log(`Banned Activity: ${activity} has been initialized`);
   }
 }
+
 /**
  * Handle actions for users with different number of warnings
  * @param {*} newMember member to handle
@@ -120,45 +138,38 @@ async function initialiseForbiddenList() {
 async function handleWarnings(newMember, status) {
   const guild = newMember.guild;
   await increaseWarning(newMember.user.username);
-  console.log(newMember.user.username);
-  let warning = await getNoOfWarning(newMember.user.username);
+  const warning = await getNoOfWarning(newMember.user.username);
+
   switch (warning) {
-    case 1: {
-      console.log("Sent to " + newMember.user.username);
-      await newMember.member.send(
-        "Our systems have detected illicit activity from your account such as watching anime or playing felonious games, this is your first warning - let it be the last."
+    case 1:
+      await newMember.send(
+        "Our systems have detected illicit activity from your account. This is your first warning."
       );
       break;
-    }
-    case 2: {
-      await newMember.member.send(
-        "This is the second warning on your account. Please cease your nefarious actions to remain in our discord server."
+    case 2:
+      await newMember.send(
+        "This is the second warning on your account. Please stop prohibited activities to remain in the server."
       );
       break;
-    }
-    case 3: {
-      await newMember.member.send(
-        "This is your last warning - we DO NOT tolerate pedophilia or other impermissible activities. There will be no more warnings."
+    case 3:
+      await newMember.send(
+        "This is your last warning. Continued violations will result in a ban."
       );
       break;
-    }
-    case 4: {
-      guild.members
-        .ban(`${newMember.user.id}`, {
-          reason: `Three strikes for playing: ${status}`,
-        })
-        .catch((err) => {
-          console.error(err);
-          var x = err.message;
+    default:
+      if (warning >= 4) {
+        await guild.members.ban(newMember.user.id, {
+          reason: `Three strikes for activity: ${status}`,
         });
+      }
       break;
-    }
   }
 }
+
 async function saveForbiddenActivityList() {
-  const JSON_Data = JSON.stringify(forbiddenActivityList, null, 2);
-  writeFileSync(jsonFilePath, JSON_Data)
+  writeJsonFile(forbiddenListPath, forbiddenActivityList);
 }
+
 /**
  * Get all user names from guild and add to listOfUsers hashmap
  * @param {*} guild
@@ -166,11 +177,11 @@ async function saveForbiddenActivityList() {
 async function getAllUserNamesFromGuild(guild) {
   await guild.members.fetch();
   const usernames = guild.members.cache.map((member) => member.user.username);
-  // console.log('Usernames in the guild:', usernames.join(', '));
-  for (user of usernames) {
+  for (const user of usernames) {
     listOfUsers[user] = { name: user, warning: 0 };
   }
 }
+
 /**
  * Get the number of warnings the user has
  * @param {*} userName key
@@ -178,48 +189,62 @@ async function getAllUserNamesFromGuild(guild) {
  */
 async function getNoOfWarning(userName) {
   try {
-    const jsonObject = JSON.parse(jsonDataRead);
-    let warning = 0; // Default value in case user doesn't have any warnings
-    for (const key in jsonObject) {
-      if (jsonObject.hasOwnProperty(key) && key === userName) {
-        const record = jsonObject[key];
-        warning = record.warning;
-        break; // If you want to get the first warning and exit the loop, you can keep this break statement
+    const warnings = loadWarnings();
+    const normalizedUserName = String(userName || "").toLowerCase();
+
+    for (const key in warnings) {
+      if (!Object.prototype.hasOwnProperty.call(warnings, key)) {
+        continue;
+      }
+      const record = warnings[key];
+      if (record?.name?.toLowerCase() === normalizedUserName || key.toLowerCase() === normalizedUserName) {
+        return Number(record.warning || 0);
       }
     }
-    return warning; // Return the warning after the loop
+
+    return 0;
   } catch (error) {
     console.error("Error reading userWarning.json:", error);
-    return 0; // Return 0 in case of error
+    return 0;
   }
 }
+
 /**
  * Increase the warning of user, find user record in userWarning.json by username key
  * @param {*} userName key
  */
 async function increaseWarning(userName) {
-  const jsonObject = JSON.parse(jsonDataRead);
-  for (const key in jsonObject) {
-    if (jsonObject.hasOwnProperty(key)) {
-      const record = jsonObject[key];
-      // Check if the value of the 'name' property matches the search value
-      if (record.name.toLowerCase() === userName.toLowerCase()) {
-        record.warning += 1;
-        break;
-      }
+  const warnings = loadWarnings();
+  const normalizedUserName = String(userName || "").toLowerCase();
+  let found = false;
+
+  for (const key in warnings) {
+    if (!Object.prototype.hasOwnProperty.call(warnings, key)) {
+      continue;
+    }
+    const record = warnings[key];
+    if (record?.name?.toLowerCase() === normalizedUserName || key.toLowerCase() === normalizedUserName) {
+      record.warning = Number(record.warning || 0) + 1;
+      found = true;
+      break;
     }
   }
-  const updatedJSON = JSON.stringify(jsonObject, null, 2);
-  writeFileSync(jsonFilePath, JSON_Data)
+
+  if (!found) {
+    warnings[userName] = { name: userName, warning: 1 };
+  }
+
+  saveWarnings(warnings);
 }
+
 /**
  * Save user to JSON file
  * @param {*} user hashmap of user warning
  */
 async function saveUserToJSON(user) {
-  const JSON_Data = JSON.stringify(listOfUsers, null, 2);
-  writeFileSync(jsonFilePath, JSON_Data)
+  writeJsonFile(warningListPath, user || listOfUsers);
 }
+
 // Exporting as default
 export default {
   getAllUserNamesFromGuild,
@@ -232,4 +257,5 @@ export default {
   initialiseForbiddenList,
   removeActivityFromList,
   addToForbiddenActivityList,
+  saveUserToJSON,
 };

@@ -14,7 +14,7 @@ export default class ClientSettings {
       .addEventListener("submit", async function (event) {
         event.preventDefault();
         const nickname = document.getElementById("nickname").value;
-        await fetch(`/discord-data/setClientNickname?nickname=${nickname}`, {
+        await fetch(`/discord-data/setClientNickname?nickname=${encodeURIComponent(nickname)}`, {
           method: "POST",
         })
           .then((response) => response.json())

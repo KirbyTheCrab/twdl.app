@@ -83,17 +83,59 @@
 
   <header id="cs2-inventory-header">
     <h3>CS2 Inventory</h3>
-    <select id="filter-cs2-items">
-      <option value="" disabled selected>Filter Items</option>
-      <option value="Rarity">Rarity</option>
-      <option value="Exterior">Exterior</option>
-      <option value="Type">Type</option>
-    </select>
 
-    <form class="searchItemByName" action="searchItemByName">
-      <input type="text" name="itemName" placeholder="Enter item name">
-      <input type="submit" value="Find">
-    </form>
+    <div class="inventory-toolbar">
+      <div class="quick-chip-row" id="quick-chip-row">
+        <button type="button" class="quick-chip" data-chip-type="Type" data-chip-value="Knife">Knives</button>
+        <button type="button" class="quick-chip" data-chip-type="Type" data-chip-value="Gloves">Gloves</button>
+        <button type="button" class="quick-chip" data-chip-type="Exterior" data-chip-value="Factory New">Factory New</button>
+        <button type="button" class="quick-chip" data-chip-type="Quality" data-chip-value="StatTrak™">StatTrak</button>
+      </div>
+
+      <div class="inventory-toolbar-main">
+        <label class="inventory-filter">
+          <span>Search</span>
+          <input id="inventory-search" type="text" placeholder="Search item name" />
+        </label>
+
+        <label class="inventory-filter">
+          <span>Rarity</span>
+          <select id="filter-rarity">
+            <option value="all">All rarities</option>
+          </select>
+        </label>
+
+        <label class="inventory-filter">
+          <span>Exterior</span>
+          <select id="filter-exterior">
+            <option value="all">All exteriors</option>
+          </select>
+        </label>
+
+        <label class="inventory-filter">
+          <span>Type</span>
+          <select id="filter-type">
+            <option value="all">All types</option>
+          </select>
+        </label>
+
+        <label class="inventory-filter">
+          <span>Sort</span>
+          <select id="sort-items">
+            <option value="name-asc">Name A-Z</option>
+            <option value="name-desc">Name Z-A</option>
+            <option value="rarity-asc">Rarity (High to Low)</option>
+            <option value="exterior-asc">Exterior (Best to Worst)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="inventory-toolbar-actions">
+        <p id="inventory-result-count" class="inventory-result-count">0 items</p>
+        <button id="inventory-reset-btn" type="button" class="inventory-reset-btn">Reset Filters</button>
+      </div>
+    </div>
+
     <div class="inventory" id="inventory"></div>
     <div id="pagination"></div>
   </header>

@@ -1,8 +1,10 @@
-header {
-  padding: 10px;
-  margin: 20px;
-  border: 2px solid #0092ca;
-  border-radius: 10px;
+.dynamic-page header {
+  padding: 12px 14px;
+  margin: 0 0 12px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
 }
 
 .clientSettings-role-list {

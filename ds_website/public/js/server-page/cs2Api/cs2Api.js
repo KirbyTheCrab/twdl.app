@@ -14,6 +14,7 @@ export default class Cs2Api {
   isShareWithFriendsConfigured;
   userShareTradeLink;
   inventoryCache = new Map();
+  itemPriceCache = new Map();
   constructor() {
     new Tracker("cs2Tracker");
     this.itemExteriorOrder = [
@@ -42,7 +43,19 @@ export default class Cs2Api {
       "SMG",
       "Shotgun",
       "Machine Guns"
-    ]
+    ];
+    this.originalItems = [];
+    this.filteredItems = [];
+    this.itemsPerPage = 16;
+    this.currentPage = 1;
+    this.currentFilters = {
+      search: "",
+      rarity: "all",
+      exterior: "all",
+      type: "all",
+      sort: "name-asc",
+      quality: "all",
+    };
     this.init();
   }
   async init() {
@@ -117,8 +130,11 @@ export default class Cs2Api {
           const cs2InventoryHeader = document.getElementById("cs2-inventory-header");
           cs2InventoryHeader.remove();
         } else if (this.steamUserCs2Inventory && Array.isArray(this.steamUserCs2Inventory.descriptions)) {
-          await this.createItemDisplay(this.steamUserCs2Inventory.descriptions);
-          await this.filterCs2Items();
+          this.originalItems = [...this.steamUserCs2Inventory.descriptions];
+          this.filteredItems = [...this.originalItems];
+          this.initializeInventoryControls();
+          await this.applyInventoryFilters();
+          await this.renderInventory();
         }
       }
     } finally {
@@ -133,48 +149,322 @@ export default class Cs2Api {
       steamConn.action = `/server/${serverId}/auth/steam`;
     }
   }
-  async filterCs2Items() {
-    document
-      .getElementById("filter-cs2-items")
-      .addEventListener("change", (event) => {
-        const filterValue = event.target.value;
-        let sortedDescriptions;
-        switch (filterValue) {
-          case "Rarity": {
-            sortedDescriptions = this.sortByRarity(this.steamUserCs2Inventory.descriptions, filterValue, this.itemRarityOrder);
-            break;
-          }
-          case "Exterior": {
-            sortedDescriptions = this.sortByRarity(this.steamUserCs2Inventory.descriptions, filterValue, this.itemExteriorOrder);
-            break;
-          }
-          case "Type": {
-            sortedDescriptions = this.sortByRarity(this.steamUserCs2Inventory.descriptions, filterValue, this.itemTypeOrder);
-            break;
-          }
-        }
-        sortedDescriptions.sort();
-        this.createItemDisplay(sortedDescriptions);
-      });
+  getTagValue(item, category) {
+    if (!Array.isArray(item?.tags)) return "Unknown";
+    return (
+      item.tags.find((tag) => tag.category === category)?.localized_tag_name ||
+      "Unknown"
+    );
   }
-  sortByRarity(list, filter, listToFilterBy) {
-    return list.sort((a, b) => {
-      // Get the rarity tag from the tags array
-      const getRarityTag = (item) =>
-        item.tags.find((tag) => tag.category === `${filter}`)
-          ?.localized_tag_name || "";
 
-      const rarityA = getRarityTag(a);
-      const rarityB = getRarityTag(b);
-
-      const indexA = listToFilterBy.indexOf(rarityA);
-      const indexB = listToFilterBy.indexOf(rarityB);
-
-      return (
-        (indexA === -1 ? Infinity : indexA) -
-        (indexB === -1 ? Infinity : indexB)
-      );
+  getCategoryValues(category) {
+    const values = new Set();
+    this.originalItems.forEach((item) => {
+      const value = this.getTagValue(item, category);
+      if (value && value !== "Unknown") values.add(value);
     });
+    return Array.from(values).sort((a, b) => a.localeCompare(b));
+  }
+
+  populateSelect(selectId, values, fallbackOption) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    select.innerHTML = "";
+    const baseOption = document.createElement("option");
+    baseOption.value = "all";
+    baseOption.textContent = fallbackOption;
+    select.appendChild(baseOption);
+
+    values.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
+  }
+
+  initializeInventoryControls() {
+    this.populateSelect("filter-rarity", this.getCategoryValues("Rarity"), "All rarities");
+    this.populateSelect("filter-exterior", this.getCategoryValues("Exterior"), "All exteriors");
+    this.populateSelect("filter-type", this.getCategoryValues("Type"), "All types");
+
+    const searchInput = document.getElementById("inventory-search");
+    const raritySelect = document.getElementById("filter-rarity");
+    const exteriorSelect = document.getElementById("filter-exterior");
+    const typeSelect = document.getElementById("filter-type");
+    const sortSelect = document.getElementById("sort-items");
+    const resetBtn = document.getElementById("inventory-reset-btn");
+    const quickChips = Array.from(document.querySelectorAll(".quick-chip"));
+
+    searchInput?.addEventListener("input", async (event) => {
+      this.currentFilters.search = event.target.value.trim().toLowerCase();
+      this.currentPage = 1;
+      await this.applyInventoryFilters();
+      await this.renderInventory();
+    });
+
+    raritySelect?.addEventListener("change", async (event) => {
+      this.currentFilters.rarity = event.target.value;
+      this.currentPage = 1;
+      await this.applyInventoryFilters();
+      await this.renderInventory();
+    });
+
+    exteriorSelect?.addEventListener("change", async (event) => {
+      this.currentFilters.exterior = event.target.value;
+      this.currentPage = 1;
+      await this.applyInventoryFilters();
+      await this.renderInventory();
+    });
+
+    typeSelect?.addEventListener("change", async (event) => {
+      this.currentFilters.type = event.target.value;
+      this.currentPage = 1;
+      await this.applyInventoryFilters();
+      await this.renderInventory();
+    });
+
+    sortSelect?.addEventListener("change", async (event) => {
+      this.currentFilters.sort = event.target.value;
+      await this.applyInventoryFilters();
+      await this.renderInventory();
+    });
+
+    resetBtn?.addEventListener("click", async () => {
+      this.currentFilters = {
+        search: "",
+        rarity: "all",
+        exterior: "all",
+        type: "all",
+        sort: "name-asc",
+        quality: "all",
+      };
+      if (searchInput) searchInput.value = "";
+      if (raritySelect) raritySelect.value = "all";
+      if (exteriorSelect) exteriorSelect.value = "all";
+      if (typeSelect) typeSelect.value = "all";
+      if (sortSelect) sortSelect.value = "name-asc";
+      quickChips.forEach((chip) => chip.classList.remove("active"));
+
+      this.currentPage = 1;
+      await this.applyInventoryFilters();
+      await this.renderInventory();
+    });
+
+    quickChips.forEach((chip) => {
+      chip.addEventListener("click", async () => {
+        const isAlreadyActive = chip.classList.contains("active");
+        quickChips.forEach((button) => button.classList.remove("active"));
+
+        if (isAlreadyActive) {
+          this.currentFilters.exterior = "all";
+          this.currentFilters.type = "all";
+          this.currentFilters.quality = "all";
+        } else {
+          chip.classList.add("active");
+          const chipType = chip.dataset.chipType;
+          const chipValue = chip.dataset.chipValue;
+
+          this.currentFilters.exterior = chipType === "Exterior" ? chipValue : "all";
+          this.currentFilters.type = chipType === "Type" ? chipValue : "all";
+          this.currentFilters.quality = chipType === "Quality" ? chipValue : "all";
+        }
+
+        if (exteriorSelect) {
+          exteriorSelect.value = this.currentFilters.exterior;
+        }
+        if (typeSelect) {
+          typeSelect.value = this.currentFilters.type;
+        }
+
+        this.currentPage = 1;
+        await this.applyInventoryFilters();
+        await this.renderInventory();
+      });
+    });
+  }
+
+  getOrderIndex(value, orderList) {
+    const idx = orderList.indexOf(value);
+    return idx === -1 ? Number.MAX_SAFE_INTEGER : idx;
+  }
+
+  async applyInventoryFilters() {
+    const { search, rarity, exterior, type, sort, quality } = this.currentFilters;
+
+    const filtered = this.originalItems.filter((item) => {
+      const name = (item.market_name || "").toLowerCase();
+      const itemRarity = this.getTagValue(item, "Rarity");
+      const itemExterior = this.getTagValue(item, "Exterior");
+      const itemType = this.getTagValue(item, "Type");
+      const itemQuality = this.getTagValue(item, "Quality");
+
+      const searchMatch = !search || name.includes(search);
+      const rarityMatch = rarity === "all" || itemRarity === rarity;
+      const exteriorMatch = exterior === "all" || itemExterior === exterior;
+      const typeMatch =
+        type === "all" ||
+        itemType === type ||
+        (type === "Knife" && (itemType.includes("Knife") || name.includes("knife"))) ||
+        (type === "Gloves" && (itemType.includes("Glove") || name.includes("glove")));
+      const qualityMatch = quality === "all" || itemQuality === quality;
+
+      return searchMatch && rarityMatch && exteriorMatch && typeMatch && qualityMatch;
+    });
+
+    filtered.sort((a, b) => {
+      const nameA = a.market_name || "";
+      const nameB = b.market_name || "";
+
+      if (sort === "name-desc") {
+        return nameB.localeCompare(nameA);
+      }
+      if (sort === "rarity-asc") {
+        const rarityA = this.getTagValue(a, "Rarity");
+        const rarityB = this.getTagValue(b, "Rarity");
+        return (
+          this.getOrderIndex(rarityA, this.itemRarityOrder) -
+          this.getOrderIndex(rarityB, this.itemRarityOrder)
+        );
+      }
+      if (sort === "exterior-asc") {
+        const exteriorA = this.getTagValue(a, "Exterior");
+        const exteriorB = this.getTagValue(b, "Exterior");
+        return (
+          this.getOrderIndex(exteriorA, this.itemExteriorOrder) -
+          this.getOrderIndex(exteriorB, this.itemExteriorOrder)
+        );
+      }
+      return nameA.localeCompare(nameB);
+    });
+
+    this.filteredItems = filtered;
+  }
+
+  async renderInventory() {
+    const inventoryDiv = document.getElementById("inventory");
+    const paginationDiv = document.getElementById("pagination");
+    const resultCount = document.getElementById("inventory-result-count");
+
+    if (!inventoryDiv || !paginationDiv) return;
+
+    const totalItems = this.filteredItems.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / this.itemsPerPage));
+    this.currentPage = Math.min(this.currentPage, totalPages);
+
+    if (resultCount) {
+      const itemLabel = totalItems === 1 ? "item" : "items";
+      resultCount.textContent = `${totalItems} ${itemLabel} matched`;
+    }
+
+    inventoryDiv.innerHTML = "";
+
+    if (!totalItems) {
+      const emptyMessage = document.createElement("p");
+      emptyMessage.classList.add("inventory-empty");
+      emptyMessage.textContent = "No items found for the selected filters.";
+      inventoryDiv.appendChild(emptyMessage);
+      paginationDiv.innerHTML = "";
+      return;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    const pageItems = this.filteredItems.slice(startIndex, endIndex);
+
+    for (const item of pageItems) {
+      const itemName = item.market_name;
+      const itemType = item.type;
+      const itemIconStr = item.icon_url;
+      const classid = item.classid;
+      const instanceid = item.instanceid;
+      const assetId = item.assetId;
+      const marketHashName = item.market_hash_name;
+      const assetInfo = await this.getAssetInfo(classid, instanceid);
+
+      let inspectInGameLink = "";
+      if (item.actions?.[0]?.link && assetInfo?.assetid) {
+        inspectInGameLink = item.actions[0].link
+          .replace("%owner_steamid%", this.steamUser.steamAuthUser.id)
+          .replace("%assetid%", assetInfo.assetid);
+      }
+
+      const rarity = this.getTagValue(item, "Rarity");
+      const exterior = this.getTagValue(item, "Exterior");
+      const itemColor = item.tags?.find((tag) => tag.category === "Rarity")?.color || "2bc0ff";
+      const itemIcon = `https://steamcommunity-a.akamaihd.net/economy/image/${itemIconStr}`;
+
+      const itemDiv = document.createElement("article");
+      itemDiv.classList.add("item");
+      itemDiv.style.borderLeftColor = `#${itemColor}`;
+
+      const itemImg = document.createElement("img");
+      itemImg.src = itemIcon;
+      itemImg.alt = itemName;
+
+      const itemNameElement = document.createElement("p");
+      itemNameElement.classList.add("item-name");
+      itemNameElement.textContent = itemName;
+
+      const itemTypeElement = document.createElement("p");
+      itemTypeElement.classList.add("item-type");
+      itemTypeElement.textContent = itemType || "Unknown type";
+
+      const itemMeta = document.createElement("p");
+      itemMeta.classList.add("item-meta");
+      itemMeta.textContent = `${rarity} • ${exterior}`;
+
+      const itemPriceElement = document.createElement("p");
+      itemPriceElement.classList.add("item-price");
+      itemPriceElement.textContent = "Market price: Loading...";
+
+      const shareItemForm = document.createElement("form");
+      shareItemForm.classList.add("item-share-form");
+
+      const shareItemBtn = document.createElement("input");
+      shareItemBtn.classList.add("item-share-btn");
+      shareItemBtn.type = "submit";
+      shareItemBtn.value = "Share Item";
+
+      shareItemForm.append(shareItemBtn);
+      itemDiv.append(
+        itemImg,
+        itemNameElement,
+        itemTypeElement,
+        itemMeta,
+        itemPriceElement,
+        shareItemForm
+      );
+      inventoryDiv.appendChild(itemDiv);
+
+      this.populateItemPrice(itemPriceElement, marketHashName);
+
+      const itemData = {
+        itemName,
+        itemColor,
+        itemIconStr,
+        inspectInGameLink,
+        marketHashName,
+        assetId,
+      };
+      await this.shareItem(shareItemForm, itemData);
+    }
+
+    paginationDiv.innerHTML = "";
+    for (let page = 1; page <= totalPages; page++) {
+      const pageButton = document.createElement("button");
+      pageButton.textContent = page;
+      pageButton.classList.add("pagination-button");
+      if (page === this.currentPage) {
+        pageButton.classList.add("active");
+      }
+      pageButton.addEventListener("click", async () => {
+        this.currentPage = page;
+        await this.renderInventory();
+      });
+      paginationDiv.appendChild(pageButton);
+    }
   }
   async shareWithFriendsForm(steamid, channelId) {
     const shareLink = document.getElementById("shareLink");
@@ -252,107 +542,32 @@ export default class Cs2Api {
       asset => asset.classid === classid && asset.instanceid === instanceid
     ) || null;
   }
-  async createItemDisplay(data) {
-    const itemsPerPage = 16; // Number of items per page
-    let currentPage = 1; // Current page
 
-    const inventoryDiv = document.getElementById("inventory");
-    const paginationDiv = document.getElementById("pagination"); // Add a container for pagination controls
-
-    // Function to render items for the current page
-    const renderPage = async () => {
-      inventoryDiv.innerHTML = "";
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const pageItems = data.slice(startIndex, endIndex);
-
-      for (let i = 0; i < pageItems.length; i++) {
-        const itemName = pageItems[i].market_name;
-        const itemType = pageItems[i].type;
-        const itemIconStr = pageItems[i].icon_url;
-        const classid = pageItems[i].classid;
-        const instanceid = pageItems[i].instanceid;
-        const assetId = pageItems[i].assetId;
-        const marketHashName = pageItems[i].market_hash_name;
-        const assetInfo = await this.getAssetInfo(classid, instanceid);
-
-        let inspectInGame;
-        let inspectInGameLink;
-        if (pageItems[i].actions) {
-          inspectInGame = pageItems[i].actions[0]?.link;
-          inspectInGameLink = inspectInGame
-            .replace('%owner_steamid%', this.steamUser.steamAuthUser.id)
-            .replace('%assetid%', assetInfo.assetid);
-        }
-
-        let itemColor = "";
-        for (let j = 0; j < pageItems[i].tags.length; j++) {
-          if (pageItems[i].tags[j].category === "Rarity") {
-            itemColor = pageItems[i].tags[j].color;
-            break;
-          }
-        }
-        const itemIcon = `https://steamcommunity-a.akamaihd.net/economy/image/${itemIconStr}`;
-
-        // Create item container
-        const itemDiv = document.createElement("div");
-        itemDiv.classList.add("item");
-
-        // Create child elements
-        const itemImg = document.createElement("img");
-        itemImg.src = itemIcon;
-
-        const itemNameElement = document.createElement("p");
-        itemNameElement.textContent = itemName;
-
-        const itemTypeElement = document.createElement("p");
-        itemTypeElement.textContent = itemType;
-
-        const shareItemForm = document.createElement("form");
-        const shareItemBtn = document.createElement("input");
-        shareItemBtn.type = "submit";
-        shareItemBtn.value = "Share Item";
-
-        // Add event listener
-        shareItemForm.append(shareItemBtn);
-        itemDiv.append(itemImg, itemNameElement, itemTypeElement, shareItemForm);
-        itemDiv.style.backgroundColor = `#${itemColor}`;
-        inventoryDiv.appendChild(itemDiv);
-        const itemData = { itemName, itemColor, itemIconStr, inspectInGameLink, marketHashName, assetId };
-        await this.shareItem(shareItemForm, itemData);
-      }
-    };
-
-    // Function to render pagination controls
-    const renderPagination = () => {
-      paginationDiv.innerHTML = "";
-      const totalPages = Math.ceil(data.length / itemsPerPage);
-
-      for (let i = 1; i <= totalPages; i++) {
-        const pageButton = document.createElement("button");
-        pageButton.textContent = i;
-        pageButton.classList.add("pagination-button");
-        if (i === currentPage) {
-          pageButton.classList.add("active");
-        }
-        pageButton.addEventListener("click", () => {
-          currentPage = i;
-          renderPage();
-          renderPagination();
-        });
-        paginationDiv.appendChild(pageButton);
-      }
-    };
-    // Initial render
-    renderPage();
-    renderPagination();
+  extractItemPrice(priceData) {
+    if (!priceData || typeof priceData !== "object") {
+      return "N/A";
+    }
+    return (
+      priceData.median_price ||
+      priceData.lowest_price ||
+      priceData.sell_price_text ||
+      "N/A"
+    );
   }
+
+  async populateItemPrice(priceElement, marketHashName) {
+    if (!priceElement) return;
+    const priceData = await this.getItemPricing(marketHashName);
+    const displayPrice = this.extractItemPrice(priceData);
+    priceElement.textContent = `Market price: ${displayPrice}`;
+  }
+
   async shareItem(form, itemData) {
     const channelId = this.isCs2ItemSharingConfigured;
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       const itemPrice = await this.getItemPricing(itemData.marketHashName);
-      itemData.itemPrice = itemPrice.median_price;
+      itemData.itemPrice = this.extractItemPrice(itemPrice);
       itemData.tradeLink = this.userShareTradeLink;
 
       await fetch("/discord-data/tracker/steam/shareItem", {
@@ -498,12 +713,22 @@ export default class Cs2Api {
 
   //come back to providing a price for items not sure how this will work or if it will work at all
   async getItemPricing(marketHashName) {
+    if (this.itemPriceCache.has(marketHashName)) {
+      return this.itemPriceCache.get(marketHashName);
+    }
+
     const response = await fetch("/discord-data/tracker/steam/itemPricing", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ marketHashName })
-    })
+    });
+
+    if (!response.ok) {
+      return { median_price: "N/A" };
+    }
+
     const data = await response.json();
+    this.itemPriceCache.set(marketHashName, data);
     return data;
   }
 }

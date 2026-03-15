@@ -1,93 +1,95 @@
-<head>
-  <link rel="stylesheet" href="/css/universal-style.css" />
-  <link rel="stylesheet" href="/css/server-style.css" />
-  <link rel="stylesheet" href="/css/universal/server-page-dynamic.css" />
-  <script type="module" src="/js/server-page/onWindowLoad.js"></script>
-</head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Control</title>
+    <script src="/js/themeBootstrap.js"></script>
+    <link rel="stylesheet" href="/css/universal-style.css" />
+    <link rel="stylesheet" href="/css/themes.css" />
+    <link rel="stylesheet" href="/css/server-style.css" />
+    <link rel="stylesheet" href="/css/universal/server-page-dynamic.css" />
+    <script type="module" src="/js/server-page/onWindowLoad.js"></script>
+    <script type="module" src="/js/themeSettings.js"></script>
+  </head>
 
-<body>
-  <script type="module" src="/js/fetchNavBar.js"></script>
-  <div id="loading-screen">
-    <p>Loading, please wait...</p>
-  </div>
-  <div id="popUpMessage" class="popUpMessage" style="display: none"></div>
-  <div id="navbar"></div>
+  <body>
+    <header>
+      <script type="module" src="/js/fetchNavBar.js"></script>
+      <div id="navbar"></div>
+    </header>
 
-  <!-- normal user view -->
-  <div class="top-header">
-    <div class="server-stats" id="server-stats"></div>
-  </div>
-  <div class="data-list">
-    <ul class="guild-data-list user-list" id="user-list">
-      <div class="server-data-list-header">
-        <h1>Members</h1>
-        <label for="Search"><input class="search-bar user-search" id="user-search" type="text"
-            placeholder="🔍 Search for user" />
-        </label>
-      </div>
-    </ul>
-
-    <ul class="guild-data-list role-list" id="role-list">
-      <div class="server-data-list-header">
-        <h1>Roles</h1>
-        <label for="Search"><input class="search-bar role-search" id="role-search" type="text"
-            placeholder="🔍 Search for role" />
-        </label>
-      </div>
-    </ul>
-  </div>
-
-  <div>
-    <ul id="api-list" class="api-list">
-      <a id="r6api">
-        <li>Rainbow Six Siege</li>
-      </a>
-      <a id="wowapi">
-        <li>World Of Warcraft</li>
-      </a>
-      <a id="cs2api">
-        <li>Counter Strike 2</li>
-      </a>
-
-      <a id="spotifyNotification">
-        <li>Spotify Buddy System</li>
-      </a>
-    </ul>
-  </div>
-
-  <div class="admin-dynamic-container">
-    <div id="adminPanel" class="client-configuration-container">
-      <ul id="client-configuration" class="client-configuration">
-        <h2>Admin Panel</h2>
-        <a id="clientSettings">
-          <li>Client Settings</li>
-        </a>
-        <a id="serverSettings">
-          <li>Server Settings</li>
-        </a>
-        <a id="reactionRoles">
-          <li>Reaction Roles</li>
-        </a>
-        <a id="welcomeMessage">
-          <li>Welcome Message</li>
-        </a>
-        <a id="forbiddenActivities">
-          <li>Forbidden Activities</li>
-        </a>
-        <a id="nukeTextChannel">
-          <li>Nuke Text Channel</li>
-        </a>
-        <a id="rainbowRoles">
-          <li>Note: Rainbow Roles?</li>
-        </a>
-      </ul>
+    <div id="loading-screen">
+      <p>Loading, please wait...</p>
     </div>
 
-    <div id="dynamic-page" class="dynamic-page"></div>
-  </div>
-</body>
+    <main>
+      <div id="popUpMessage" class="popUpMessage" style="display: none"></div>
 
-<footer>
-  <script type="module" src="/js/fetchFooter.js"></script>
-  <div id="footer"></div>
-</footer>
+      <section class="top-header">
+        <div class="server-stats" id="server-stats"></div>
+      </section>
+
+      <section class="data-list">
+        <ul class="guild-data-list user-list" id="user-list">
+          <div class="server-data-list-header">
+            <h1>Members</h1>
+            <label for="Search">
+              <input
+                class="search-bar user-search"
+                id="user-search"
+                type="text"
+                placeholder="Search for user"
+              />
+            </label>
+          </div>
+        </ul>
+
+        <ul class="guild-data-list role-list" id="role-list">
+          <div class="server-data-list-header">
+            <h1>Roles</h1>
+            <label for="Search">
+              <input
+                class="search-bar role-search"
+                id="role-search"
+                type="text"
+                placeholder="Search for role"
+              />
+            </label>
+          </div>
+        </ul>
+      </section>
+
+      <section>
+        <ul id="api-list" class="api-list">
+          <a id="r6api"><li>Rainbow Six Siege</li></a>
+          <a id="wowapi"><li>World Of Warcraft</li></a>
+          <a id="cs2api"><li>Counter Strike 2</li></a>
+          <a id="spotifyNotification"><li>Spotify Buddy System</li></a>
+        </ul>
+      </section>
+
+      <section class="admin-dynamic-container">
+        <div id="adminPanel" class="client-configuration-container">
+          <ul id="client-configuration" class="client-configuration">
+            <h2>Admin Panel</h2>
+            <a id="clientSettings"><li>Client Settings</li></a>
+            <a id="serverSettings"><li>Server Settings</li></a>
+            <a id="reactionRoles"><li>Reaction Roles</li></a>
+            <a id="welcomeMessage"><li>Welcome Message</li></a>
+            <a id="forbiddenActivities"><li>Forbidden Activities</li></a>
+            <a id="nukeTextChannel"><li>Nuke Text Channel</li></a>
+            <a id="rainbowRoles"><li>Note: Rainbow Roles?</li></a>
+          </ul>
+        </div>
+
+        <div id="dynamic-page" class="dynamic-page"></div>
+      </section>
+    </main>
+
+    <footer>
+      <script type="module" src="/js/fetchFooter.js"></script>
+      <div id="footer"></div>
+    </footer>
+  </body>
+</html>

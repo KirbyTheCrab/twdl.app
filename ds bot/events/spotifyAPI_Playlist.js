@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
+import discord_pkg from "discord.js"
 import SpotifyWebAPI from "spotify-web-api-node";
 import { promises as fs } from "node:fs";
-import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = discord_pkg
 dotenv.config();
 
 export default class SpotifyBuddieSystem {

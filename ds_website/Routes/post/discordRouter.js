@@ -23,39 +23,54 @@ import removePlaylist from "../../Controller/post/client/spotify-noti/removePlay
 import editPlaylist from "../../Controller/post/client/spotify-noti/editPlaylist.js";
 import itemPricing from "../../Controller/post/client/steamAPI/itemPricing.js";
 import multer from "multer";
+import {
+  requireAuth,
+  requireServerSelection,
+  requireGuildAdmin,
+} from "../../middleware/discordAccess.js";
 
 const upload = multer({ dest: "uploads/" });
 const discordRoute_POST = express.Router();
+discordRoute_POST.use(requireAuth, requireServerSelection);
 
 //prefix:(/discord-data/)
 discordRoute_POST
-  .post("/setClientNickname", changeClientNickName)
-  .post("/setGuildIcon", upload.single("image"), changeGuildIcon)
-  .post("/setGuildName", changeGuildName)
-  .post("/kickClient", kickClient)
-  .post("/createEmbed", createEmbedReaction)
-  .post("/welcomeMessage", welcomeMessage)
-  .post("/saveRoleReactionFile", saveRoleReactionFile)
+  .post("/setClientNickname", requireGuildAdmin, changeClientNickName)
+  .post(
+    "/setGuildIcon",
+    requireGuildAdmin,
+    upload.single("image"),
+    changeGuildIcon
+  )
+  .post("/setGuildName", requireGuildAdmin, changeGuildName)
+  .post("/kickClient", requireGuildAdmin, kickClient)
+  .post("/createEmbed", requireGuildAdmin, createEmbedReaction)
+  .post("/welcomeMessage", requireGuildAdmin, welcomeMessage)
+  .post("/saveRoleReactionFile", requireGuildAdmin, saveRoleReactionFile)
   .post("/getDataFromJsonFiles", getDataFromJsonFiles)
-  .post("/deleteDiscordMessage", removeDiscordMessage)
+  .post("/deleteDiscordMessage", requireGuildAdmin, removeDiscordMessage)
 
   .post("/guild/channel-data", getChannelInfo)
   .post("/guild/user-data", getUserInfo)
 
   //Tracker Network
-  .post("/tracker/initTracker", r6Init)
+  .post("/tracker/initTracker", requireGuildAdmin, r6Init)
   .post("/tracker/isUserRegistered", isUserRegistered)
-  .post("/tracker/saveUser", saveUser)
-  .post("/tracker/steam/share", shareWithFriends)
-  .post("/tracker/steam/tradeLink", shareTradeLink)
+  .post("/tracker/saveUser", requireGuildAdmin, saveUser)
+  .post("/tracker/steam/share", requireGuildAdmin, shareWithFriends)
+  .post("/tracker/steam/tradeLink", requireGuildAdmin, shareTradeLink)
   .post("/guild/tracker/isEnabled", isEnabled)
-  .post("/tracker/steam/shareItem", shareItem)
-  .post("/tracker/steam/steamSharingConfiguration", steamSharingConfiguration)
-  .post("/tracker/steam/itemPricing", itemPricing)
+  .post("/tracker/steam/shareItem", requireGuildAdmin, shareItem)
+  .post(
+    "/tracker/steam/steamSharingConfiguration",
+    requireGuildAdmin,
+    steamSharingConfiguration
+  )
+  .post("/tracker/steam/itemPricing", requireGuildAdmin, itemPricing)
 
   //spotify routes
-  .post("/spotify/buddies-list/add", addSpotifyBuddies)
-  .post("/spotify/playlist/remove", removePlaylist)
-  .post("/spotify/playlist/edit", editPlaylist)
+  .post("/spotify/buddies-list/add", requireGuildAdmin, addSpotifyBuddies)
+  .post("/spotify/playlist/remove", requireGuildAdmin, removePlaylist)
+  .post("/spotify/playlist/edit", requireGuildAdmin, editPlaylist)
 
 export default discordRoute_POST;

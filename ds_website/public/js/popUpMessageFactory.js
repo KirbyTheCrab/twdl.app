@@ -33,9 +33,11 @@ export default class PopUpMessage {
     }
     responseText.classList.add("visible");
     if (status === "ok") {
-      responseText.style.background = "rgba(0, 255, 0, 0.7)";
+      responseText.style.background = "rgba(20, 128, 78, 0.85)";
     } else if (status === "error") {
-      responseText.style.background = "rgba(255, 0, 0, 0.7)";
+      responseText.style.background = "rgba(158, 34, 44, 0.88)";
+    } else {
+      responseText.style.background = "rgba(22, 70, 102, 0.88)";
     }
   }
 

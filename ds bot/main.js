@@ -1,12 +1,18 @@
 import setup from "./setup.js";
+import discord_pkg from "discord.js"
 const { Events, client, client_token } = setup;
 import userWarnings from "./events/userWarnings.js";
 const { getUserDiscordActivity, initialiseForbiddenList } = userWarnings;
 import reloadWelcomeMessage from "./handlers/reloadWelcomeMessage.js";
 import CommandCreater from "./handlers/command_creater.js";
-import { EmbedBuilder } from "discord.js";
+const { EmbedBuilder } = discord_pkg
 import SpotifyBuddieSystem from "./events/spotifyAPI_Playlist.js";
 import fs from 'node:fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const commandCreater = new CommandCreater();
 
@@ -86,8 +92,9 @@ client.on("ready", async () => {
 });
 
 function pollEveryServer() {
-  const data = fs.readFileSync('../ds bot/model/spotifyNoti/serverConfigs.json', 'utf8');
-  const allServerConfiguration = JSON.parse(data).serverConfigs;
+  const configPath = path.join(__dirname, "model", "spotifyNoti", "serverConfigs.json");
+  const data = fs.readFileSync(configPath, 'utf8');
+  const allServerConfiguration = JSON.parse(data).serverConfigs || [];
   allServerConfiguration.forEach((serverConfigs) => {
     const { serverId, playlists } = serverConfigs;
 

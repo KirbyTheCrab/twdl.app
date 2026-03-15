@@ -1,0 +1,346 @@
+/*
+ * TWDL Themes
+ * ============
+ * Four visual designs, each selectable at runtime.
+ * Applied by setting [data-theme] on <html>.
+ *
+ *   ocean    → default (no attribute needed — falls back to :root in universal-style.css)
+ *   midnight → deep indigo / violet accent
+ *   ember    → warm charcoal / amber-orange accent
+ *   jade     → dark forest / emerald accent
+ *
+ * The theme switcher component styles live at the bottom of this file.
+ */
+
+/* ══════════════════════════════════════════════════════
+   MIDNIGHT — deep indigo + violet
+   Discord-adjacent palette; feels native to a bot dashboard.
+   ══════════════════════════════════════════════════════ */
+[data-theme="midnight"] {
+  color-scheme: dark;
+
+  --bg-deep: #0d0a1e;
+  --bg-mid: #1a1433;
+  --bg-soft: #251d4a;
+
+  --surface: rgba(18, 14, 40, 0.62);
+  --surface-strong: rgba(22, 17, 52, 0.85);
+  --panel-bg: rgba(20, 15, 42, 0.62);
+  --panel-bg-strong: rgba(14, 10, 32, 0.96);
+  --panel-bg-card: rgba(26, 20, 54, 0.75);
+  --panel-bg-btn: rgba(14, 10, 36, 0.75);
+  --panel-hover: rgba(52, 40, 110, 0.55);
+  --panel-hover-btn: rgba(44, 34, 96, 0.78);
+
+  --border: rgba(150, 130, 255, 0.34);
+  --panel-border: rgba(150, 130, 255, 0.28);
+  --panel-border-card: rgba(150, 130, 255, 0.24);
+  --panel-border-hover: rgba(150, 130, 255, 0.62);
+  --panel-border-strong: rgba(150, 130, 255, 0.46);
+
+  --accent-glow: rgba(124, 106, 255, 0.18);
+  --accent-focus-ring: rgba(124, 106, 255, 0.22);
+
+  --text-main: #f0eeff;
+  --text-muted: #b4a6dc;
+  --text-list: #d8d0f8;
+
+  --accent: #7c6aff;
+  --accent-strong: #5444d4;
+  --accent-warm: #ff7eb3;
+  --danger: #ff5d67;
+  --ok: #5de8a2;
+
+  --grad-warm: rgba(255, 126, 179, 0.16);
+  --grad-cool: rgba(124, 106, 255, 0.22);
+
+  --nav-bg: linear-gradient(160deg, rgba(30, 22, 68, 0.82), rgba(14, 10, 36, 0.88));
+  --nav-user-bg: rgba(10, 7, 26, 0.72);
+  --footer-bg: linear-gradient(170deg, rgba(22, 16, 54, 0.75), rgba(10, 7, 26, 0.82));
+  --loading-bg: rgba(6, 4, 14, 0.86);
+  --input-bg: rgba(12, 9, 30, 0.75);
+  --input-border: rgba(150, 130, 255, 0.36);
+  --input-placeholder: rgba(220, 210, 255, 0.55);
+  --btn-shadow: 0 8px 20px rgba(80, 60, 200, 0.34);
+
+  --shadow-lg: 0 18px 40px rgba(4, 0, 24, 0.52);
+  --shadow-sm: 0 8px 18px rgba(4, 0, 20, 0.36);
+}
+
+/* ══════════════════════════════════════════════════════
+   EMBER — warm charcoal + amber-orange
+   Bold, warm, energetic. Great contrast with the cool default.
+   ══════════════════════════════════════════════════════ */
+[data-theme="ember"] {
+  color-scheme: dark;
+
+  --bg-deep: #130c07;
+  --bg-mid: #251608;
+  --bg-soft: #38220c;
+
+  --surface: rgba(22, 13, 6, 0.62);
+  --surface-strong: rgba(28, 16, 7, 0.85);
+  --panel-bg: rgba(28, 14, 6, 0.62);
+  --panel-bg-strong: rgba(20, 10, 4, 0.96);
+  --panel-bg-card: rgba(36, 19, 8, 0.76);
+  --panel-bg-btn: rgba(18, 9, 4, 0.75);
+  --panel-hover: rgba(90, 42, 12, 0.55);
+  --panel-hover-btn: rgba(74, 34, 10, 0.78);
+
+  --border: rgba(255, 160, 60, 0.34);
+  --panel-border: rgba(255, 140, 58, 0.28);
+  --panel-border-card: rgba(255, 140, 58, 0.22);
+  --panel-border-hover: rgba(255, 140, 58, 0.60);
+  --panel-border-strong: rgba(255, 140, 58, 0.46);
+
+  --accent-glow: rgba(255, 140, 58, 0.16);
+  --accent-focus-ring: rgba(255, 140, 58, 0.22);
+
+  --text-main: #fff3e8;
+  --text-muted: #d4a882;
+  --text-list: #f2d8ba;
+
+  --accent: #ff8c3a;
+  --accent-strong: #d96020;
+  --accent-warm: #ffd166;
+  --danger: #ff3b47;
+  --ok: #46d98c;
+
+  --grad-warm: rgba(255, 110, 20, 0.22);
+  --grad-cool: rgba(255, 200, 80, 0.14);
+
+  --nav-bg: linear-gradient(160deg, rgba(44, 22, 8, 0.82), rgba(20, 10, 4, 0.88));
+  --nav-user-bg: rgba(14, 7, 2, 0.72);
+  --footer-bg: linear-gradient(170deg, rgba(34, 17, 6, 0.75), rgba(16, 7, 2, 0.82));
+  --loading-bg: rgba(8, 4, 2, 0.88);
+  --input-bg: rgba(18, 9, 4, 0.76);
+  --input-border: rgba(255, 140, 58, 0.36);
+  --input-placeholder: rgba(255, 210, 170, 0.55);
+  --btn-shadow: 0 8px 20px rgba(200, 80, 20, 0.36);
+
+  --shadow-lg: 0 18px 40px rgba(20, 4, 0, 0.52);
+  --shadow-sm: 0 8px 18px rgba(16, 4, 0, 0.34);
+}
+
+/* ══════════════════════════════════════════════════════
+   JADE — deep forest + emerald
+   Clean, organic, modern SaaS. High-contrast green accents.
+   ══════════════════════════════════════════════════════ */
+[data-theme="jade"] {
+  color-scheme: dark;
+
+  --bg-deep: #061412;
+  --bg-mid: #0c2220;
+  --bg-soft: #113430;
+
+  --surface: rgba(8, 28, 24, 0.62);
+  --surface-strong: rgba(10, 34, 30, 0.85);
+  --panel-bg: rgba(8, 28, 24, 0.62);
+  --panel-bg-strong: rgba(6, 22, 18, 0.96);
+  --panel-bg-card: rgba(12, 36, 32, 0.76);
+  --panel-bg-btn: rgba(5, 18, 14, 0.75);
+  --panel-hover: rgba(20, 72, 58, 0.55);
+  --panel-hover-btn: rgba(14, 54, 42, 0.78);
+
+  --border: rgba(45, 218, 147, 0.34);
+  --panel-border: rgba(45, 218, 147, 0.28);
+  --panel-border-card: rgba(45, 218, 147, 0.22);
+  --panel-border-hover: rgba(45, 218, 147, 0.60);
+  --panel-border-strong: rgba(45, 218, 147, 0.46);
+
+  --accent-glow: rgba(45, 218, 147, 0.16);
+  --accent-focus-ring: rgba(45, 218, 147, 0.22);
+
+  --text-main: #e8fff7;
+  --text-muted: #8eceaf;
+  --text-list: #c8f0de;
+
+  --accent: #2dda93;
+  --accent-strong: #1aaa6c;
+  --accent-warm: #ffd166;
+  --danger: #ff5d67;
+  --ok: #46d98c;
+
+  --grad-warm: rgba(255, 209, 102, 0.16);
+  --grad-cool: rgba(45, 218, 147, 0.20);
+
+  --nav-bg: linear-gradient(160deg, rgba(14, 44, 38, 0.82), rgba(6, 22, 18, 0.88));
+  --nav-user-bg: rgba(4, 14, 12, 0.72);
+  --footer-bg: linear-gradient(170deg, rgba(10, 36, 30, 0.75), rgba(5, 18, 14, 0.82));
+  --loading-bg: rgba(2, 8, 6, 0.88);
+  --input-bg: rgba(4, 16, 12, 0.76);
+  --input-border: rgba(45, 218, 147, 0.36);
+  --input-placeholder: rgba(180, 250, 210, 0.55);
+  --btn-shadow: 0 8px 20px rgba(20, 160, 90, 0.34);
+
+  --shadow-lg: 0 18px 40px rgba(0, 10, 6, 0.50);
+  --shadow-sm: 0 8px 18px rgba(0, 8, 5, 0.34);
+}
+
+/* ══════════════════════════════════════════════════════
+   THEME-TRANSITION — smooth colour crossfade on switch
+   Added temporarily by themeSettings.js while switching.
+   ══════════════════════════════════════════════════════ */
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition:
+    color 280ms ease,
+    background-color 280ms ease,
+    border-color 280ms ease,
+    box-shadow 280ms ease !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   THEME SWITCHER COMPONENT
+   Floating bottom-right button + swatch panel.
+   ══════════════════════════════════════════════════════ */
+#theme-settings-host {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 4000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+#theme-toggle-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  color: var(--accent);
+  padding: 0;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+#theme-toggle-btn:hover {
+  transform: scale(1.08);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+#theme-toggle-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Panel */
+#theme-panel {
+  width: 256px;
+  background: var(--surface-strong);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
+#theme-panel[hidden] {
+  display: none;
+}
+
+#theme-panel:not([hidden]) {
+  animation: theme-panel-rise 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes theme-panel-rise {
+  from {
+    opacity: 0;
+    transform: scale(0.90) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.theme-panel-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin: 0 0 14px;
+}
+
+/* Swatch grid */
+.theme-swatches {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.theme-swatch {
+  all: unset;
+  cursor: pointer;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.theme-swatch:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.theme-swatch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-swatch.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-focus-ring);
+}
+
+/* Swatch colour preview card */
+.swatch-preview {
+  width: 100%;
+  aspect-ratio: 1 / 1.1;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.swatch-bg-fill {
+  flex: 1;
+}
+
+.swatch-accent-bar {
+  height: 5px;
+}
+
+.swatch-warm-bar {
+  height: 3px;
+}
+
+.swatch-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 5px 2px 3px;
+  text-align: center;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.theme-swatch.active .swatch-label {
+  color: var(--text-main);
+}

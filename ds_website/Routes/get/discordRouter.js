@@ -17,7 +17,12 @@ import isShareWithFriendsConfigured from "../../Controller/post/client/steamAPI/
 import isCs2ItemSharingConfigured from "../../Controller/post/client/steamAPI/isCs2ItemSharingConfigured.js";
 import getServerPlaylists from "../../Controller/get/spotify/getPlaylists.js";
 import didUserShareTradeLink from "../../Controller/post/client/steamAPI/didUserShareTradeLink.js";
+import {
+  requireAuth,
+  requireServerSelection,
+} from "../../middleware/discordAccess.js";
 const discordRoute_GET = express.Router();
+discordRoute_GET.use(requireAuth);
 
 discordRoute_GET
 
@@ -28,17 +33,17 @@ discordRoute_GET
   .get("/client/servers", getClientServers)
 
   //guild
-  .get("/guild/guild-data", getGuildData)
-  .get("/guild/role-data", getRoleInfo)
-  .get("/guild/text-channels", getTextChannels)
-  .get("/guild/roles", getServerRoles)
-  .get("/guild/disableWelcomeMsg", disableWelcomeMsg)
-  .get("/spotify/playlists", getServerPlaylists)
+  .get("/guild/guild-data", requireServerSelection, getGuildData)
+  .get("/guild/role-data", requireServerSelection, getRoleInfo)
+  .get("/guild/text-channels", requireServerSelection, getTextChannels)
+  .get("/guild/roles", requireServerSelection, getServerRoles)
+  .get("/guild/disableWelcomeMsg", requireServerSelection, disableWelcomeMsg)
+  .get("/spotify/playlists", requireServerSelection, getServerPlaylists)
 
   //Tracker Network
-  .get("/guild/tracker/isUserRegistered", isUserRegistered)
+  .get("/guild/tracker/isUserRegistered", requireServerSelection, isUserRegistered)
   .get("/r6Tracker/apiConn", r6TrackerAPIConn)
-  .get("/api/steam/inventory", getSteamUserInventory)
+  .get("/api/steam/inventory", requireServerSelection, getSteamUserInventory)
   .get("/guild/tracker/steam/isTradeLinkConfigured", isTradeLinkConfigured)
   .get("/tracker/steam/didUserShareTradeLink", didUserShareTradeLink)
   .get(

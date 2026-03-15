@@ -1,4 +1,5 @@
 import { readdir } from "fs/promises"; // Use the promises API to read directories
+import discord_pkg from "discord.js"
 import { fileURLToPath } from "url";
 
 import dotenv from "dotenv";
@@ -6,15 +7,15 @@ dotenv.config();
 
 import setup from "../setup.js";
 const { client, commandsPath, client_id, client_token } = setup;
-import { Collection, REST, Routes } from "discord.js";
+const { Collection, REST, Routes } = discord_pkg
 const rest = new REST({ version: "10" }).setToken(client_token);
 
 import { data as addToForbiddenActivityListCommand } from "../commands/addtoactivitylist.js";
 import { data as displayForbiddenActivityListCommand } from "../commands/displayforbiddenactivitylist.js";
 import { data as removeFromForbiddenActivityListCommand } from "../commands/removefromactivitylist.js";
 import { data as getusersCommand } from "../commands/getusers.js";
-import {data as helpCommand} from '../commands/help.js'
-import {data as joinCommand} from '../commands/join.js'
+import { data as helpCommand } from '../commands/help.js'
+import { data as joinCommand } from '../commands/join.js'
 const argSlashCommands = [
   addToForbiddenActivityListCommand,
   removeFromForbiddenActivityListCommand,

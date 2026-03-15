@@ -1,4 +1,5 @@
-import { SlashCommandBuilder } from "discord.js";
+import discord_pkg from "discord.js"
+const { SlashCommandBuilder } = discord_pkg
 import userWarnings from "../events/userWarnings.js";
 const { removeActivityFromList } = userWarnings;
 

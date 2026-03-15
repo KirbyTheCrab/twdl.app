@@ -6,9 +6,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <base href="/" />
+  <script src="/js/themeBootstrap.js"></script>
   <link rel="stylesheet" href="/css/universal-style.css" />
+  <link rel="stylesheet" href="/css/themes.css" />
   <link rel="stylesheet" href="/css/index-style.css">
   <script type="module" src="/js/fetchFooter.js"></script>
+  <script type="module" src="/js/themeSettings.js"></script>
 </head>
 
 <body>
@@ -16,60 +19,63 @@
     <script type="module" src="/js/fetchNavBar.js"></script>
     <div id="navbar"></div>
   </header>
-  <div id="guildList" class="bot-stats"></div>
-  <!-- <script src="/js/login/fetch/dsBot.js"></script> -->
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="hero-kicker">Discord Automation Hub</p>
+        <h1>Run your server like a live control room, not a config maze.</h1>
+        <p>
+          TWDL brings moderation, role automation, tracker integrations, and Spotify buddy notifications into one fast dashboard.
+        </p>
+        <div class="hero-actions">
+          <a href="https://discord.com/oauth2/authorize?client_id=1089904140685164686&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A53134%2Fauth%2Fdiscord&scope=identify+guilds+connections+guilds.members.read"
+            class="hero-btn hero-btn-primary">Open Dashboard</a>
+          <a href="https://discord.com/oauth2/authorize?client_id=1089904140685164686&scope=bot&permissions=1099511627775"
+            class="hero-btn hero-btn-secondary">Invite Bot</a>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <h2>What you can manage</h2>
+        <ul>
+          <li>Role reaction workflows and onboarding flows</li>
+          <li>Guild and bot settings with instant feedback</li>
+          <li>Tracker modules for R6 and CS2 sharing</li>
+          <li>Spotify buddy alerts and playlist hooks</li>
+        </ul>
+      </div>
+    </section>
 
-  <div class="mainFeatureDiv">
-    <div class="featureDiv">
-      <h2>Spotify Buddy System</h2>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti esse itaque aspernatur culpa, id, ab iste
-        exercitationem totam debitis ullam quod magnam iusto delectus dolorem! Facilis earum quod velit corrupti!</p>
-    </div>
+    <section>
+      <div id="guildList" class="bot-stats"></div>
+    </section>
 
-    <div class="featureDiv">
-      <h2>Forbidden Activity List</h2>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti esse itaque aspernatur culpa, id, ab iste
-        exercitationem totam debitis ullam quod magnam iusto delectus dolorem! Facilis earum quod velit corrupti!</p>
-    </div>
-
-    <div class="featureDiv">
-      <h2>CS2 Trading in discord servers</h2>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti esse itaque aspernatur culpa, id, ab iste
-        exercitationem totam debitis ullam quod magnam iusto delectus dolorem! Facilis earum quod velit corrupti!</p>
-    </div>
-
-    <div class="featureDiv">
-      <h2>Server & Client settings</h2>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti esse itaque aspernatur culpa, id, ab iste
-        exercitationem totam debitis ullam quod magnam iusto delectus dolorem! Facilis earum quod velit corrupti!</p>
-    </div>
-
-    <div class="featureDiv">
-      <h2>Reaction Roles</h2>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti esse itaque aspernatur culpa, id, ab iste
-        exercitationem totam debitis ullam quod magnam iusto delectus dolorem! Facilis earum quod velit corrupti!</p>
-    </div>
-
-    <div class="featureDiv">
-      <h2>Welcome Messages</h2>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti esse itaque aspernatur culpa, id, ab iste
-        exercitationem totam debitis ullam quod magnam iusto delectus dolorem! Facilis earum quod velit corrupti!</p>
-    </div>
-
-    <div class="featureDiv">
-      <h2>Nuke text channels</h2>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti esse itaque aspernatur culpa, id, ab iste
-        exercitationem totam debitis ullam quod magnam iusto delectus dolorem! Facilis earum quod velit corrupti!</p>
-    </div>
-
-    <div class="featureDiv">
-      <h2>Rainbow rolls for everyone</h2>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti esse itaque aspernatur culpa, id, ab iste
-        exercitationem totam debitis ullam quod magnam iusto delectus dolorem! Facilis earum quod velit corrupti!</p>
-    </div>
-  </div>
-  </div>
-
+    <section class="mainFeatureDiv">
+      <article class="featureDiv">
+        <h2>Spotify Buddy System</h2>
+        <p>Track playlist updates and alert your server when friends are active so listening becomes a shared event.</p>
+      </article>
+      <article class="featureDiv">
+        <h2>Forbidden Activity List</h2>
+        <p>Manage server activity policies with simple controls and clear warning automation behavior.</p>
+      </article>
+      <article class="featureDiv">
+        <h2>CS2 Trading</h2>
+        <p>Configure trade-link sharing and item visibility settings from one place with less manual setup.</p>
+      </article>
+      <article class="featureDiv">
+        <h2>Server and Client Settings</h2>
+        <p>Update guild identity and bot behavior directly from the panel with immediate visual confirmations.</p>
+      </article>
+      <article class="featureDiv">
+        <h2>Reaction Roles</h2>
+        <p>Create role-based interactions quickly so members can self-assign access and interests.</p>
+      </article>
+      <article class="featureDiv">
+        <h2>Welcome Messages</h2>
+        <p>Build custom welcome experiences that match your server style and onboarding flow.</p>
+      </article>
+    </section>
+  </main>
 
   <footer>
     <div id="footer"></div>

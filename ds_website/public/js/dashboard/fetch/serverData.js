@@ -36,6 +36,8 @@ export default class ServerData {
     this.setListOfServerIds(serverData.id);
     const serverCard = document.createElement("div");
     serverCard.classList.add("server-card", serverData.id);
+    const staggerDelay = Math.min(this.listOfServerIds.length * 55, 550);
+    serverCard.style.setProperty("--stagger", `${staggerDelay}ms`);
     const serverPermissions = await this.userPermissions(
       serverData,
       userId,

@@ -1,7 +1,149 @@
-<head>
-    <link rel="stylesheet" href="/css/universal-style.css" />
-</head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TWDL Status</title>
+        <script src="/js/themeBootstrap.js"></script>
+        <link rel="stylesheet" href="/css/universal-style.css" />
+        <link rel="stylesheet" href="/css/themes.css" />
+        <link rel="stylesheet" href="/css/status-style.css" />
+        <script type="module" src="/js/fetchNavBar.js"></script>
+        <script type="module" src="/js/fetchFooter.js"></script>
+        <script type="module" src="/js/themeSettings.js"></script>
+        <script type="module" src="/js/statusPage.js"></script>
+    </head>
 
-<div>
-    <h1>To be implemented...</h1>
-</div>
+    <body>
+        <header>
+            <div id="navbar"></div>
+        </header>
+
+        <main>
+            <section class="status-hero">
+                <p class="status-kicker">System Monitor</p>
+                <h1>TWDL Platform Status</h1>
+                <p class="status-subtext">
+                    Live overview of web availability, Discord bot health, and usage metrics.
+                </p>
+
+                <div class="status-pill-row">
+                    <span class="status-pill"><span id="site-dot" class="dot"></span> Website: <strong id="site-status">Checking...</strong></span>
+                    <span class="status-pill"><span id="bot-dot" class="dot"></span> Bot: <strong id="bot-status">Checking...</strong></span>
+                    <span class="status-pill">Latency: <strong id="latency">N/A</strong></span>
+                    <span class="status-pill">Reliability: <strong id="reliability-score">N/A</strong></span>
+                </div>
+            </section>
+
+            <section class="metrics-grid">
+                <article class="metric-card">
+                    <p class="metric-label">Servers Connected</p>
+                    <p id="guild-count" class="metric-value">-</p>
+                    <p class="metric-note">Discord guilds with TWDL active</p>
+                </article>
+
+                <article class="metric-card">
+                    <p class="metric-label">Member Reach</p>
+                    <p id="member-count" class="metric-value">-</p>
+                    <p class="metric-note">Estimated users across connected guilds</p>
+                </article>
+
+                <article class="metric-card">
+                    <p class="metric-label">Command Modules</p>
+                    <p id="command-count" class="metric-value">-</p>
+                    <p class="metric-note">Slash command files currently available</p>
+                </article>
+
+                <article class="metric-card">
+                    <p class="metric-label">Event Modules</p>
+                    <p id="event-count" class="metric-value">-</p>
+                    <p class="metric-note">Event handlers and background jobs loaded</p>
+                </article>
+            </section>
+
+            <section class="panels">
+                <article class="panel">
+                    <h2>Website Runtime</h2>
+                    <div class="kv-list">
+                        <div class="kv"><span class="kv-key">Website uptime</span><span id="site-uptime" class="kv-value">-</span></div>
+                        <div class="kv"><span class="kv-key">Node runtime</span><span id="node-version" class="kv-value">-</span></div>
+                        <div class="kv"><span class="kv-key">Platform</span><span id="platform" class="kv-value">-</span></div>
+                        <div class="kv"><span class="kv-key">RSS memory</span><span id="memory-rss" class="kv-value">-</span></div>
+                        <div class="kv"><span class="kv-key">Heap used</span><span id="memory-heap" class="kv-value">-</span></div>
+                    </div>
+                </article>
+
+                <article class="panel">
+                    <h2>Bot Runtime</h2>
+                    <div class="kv-list">
+                        <div class="kv"><span class="kv-key">Bot uptime</span><span id="bot-uptime" class="kv-value">-</span></div>
+                        <div class="kv"><span class="kv-key">Cached users</span><span id="cached-user-count" class="kv-value">-</span></div>
+                        <div class="kv"><span class="kv-key">Gateway ping</span><span id="latency-secondary" class="kv-value">-</span></div>
+                    </div>
+
+                    <div class="health-wrap">
+                        <div class="health-meter">
+                            <div id="health-meter-fill" class="health-meter-fill"></div>
+                        </div>
+                        <p class="health-caption">Reliability score is a weighted indicator of website availability, bot readiness, and latency quality.</p>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel trend-panel">
+                <h2>Last 60 Minutes</h2>
+                <p class="trend-subtext">Rolling trend data sampled every 30 seconds while this page is open.</p>
+
+                <div class="trend-grid">
+                    <article class="trend-card">
+                        <div class="trend-card-head">
+                            <p class="trend-title">Gateway Latency</p>
+                            <p id="latency-trend-current" class="trend-value">N/A</p>
+                        </div>
+                        <svg id="latency-sparkline" class="sparkline" viewBox="0 0 320 88" role="img" aria-label="Latency trend sparkline"></svg>
+                        <p id="latency-trend-range" class="trend-foot">Range: N/A</p>
+                    </article>
+
+                    <article class="trend-card">
+                        <div class="trend-card-head">
+                            <p class="trend-title">Reliability Score</p>
+                            <p id="reliability-trend-current" class="trend-value">N/A</p>
+                        </div>
+                        <svg id="reliability-sparkline" class="sparkline" viewBox="0 0 320 88" role="img" aria-label="Reliability score trend sparkline"></svg>
+                        <p id="reliability-trend-range" class="trend-foot">Range: N/A</p>
+                    </article>
+                </div>
+
+                <div class="trend-kpis">
+                    <div class="trend-kpi">
+                        <p class="trend-kpi-label">Full Availability</p>
+                        <p id="availability-rate" class="trend-kpi-value">N/A</p>
+                    </div>
+                    <div class="trend-kpi">
+                        <p class="trend-kpi-label">Avg Latency</p>
+                        <p id="latency-average" class="trend-kpi-value">N/A</p>
+                    </div>
+                    <div class="trend-kpi">
+                        <p class="trend-kpi-label">Samples</p>
+                        <p id="trend-samples" class="trend-kpi-value">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>What We Monitor</h2>
+                <ul>
+                    <li>Website availability and runtime health (uptime and memory pressure)</li>
+                    <li>Discord bot readiness, latency, and connected guild footprint</li>
+                    <li>Operational module counts (command + event handlers)</li>
+                    <li>Live metric refresh every 30 seconds</li>
+                </ul>
+                <p id="status-timestamp" class="status-timestamp">Last updated: waiting for first refresh...</p>
+            </section>
+        </main>
+
+        <footer>
+            <div id="footer"></div>
+        </footer>
+    </body>
+</html>

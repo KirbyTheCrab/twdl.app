@@ -11,7 +11,7 @@ export default class GuildSettings {
       .addEventListener("submit", async function (event) {
         event.preventDefault();
         const guildName = document.getElementById("guildName").value;
-        await fetch(`/discord-data/setGuildName?name=${guildName}`, {
+        await fetch(`/discord-data/setGuildName?name=${encodeURIComponent(guildName)}`, {
           method: "POST",
         })
           .then((response) => response.json())

@@ -1,13 +1,12 @@
 import client from "../../../../ds bot/main.js";
 //gives us all the servers that the bot is in in hashmaps
 export default async function getClientServers(request, response) {
-  const serverId = request.session.serverId;
-  // console.log(serverId);
-  const clientServers = await client.guilds.fetch(serverId);
-  const clientServersList = [];
-  // console.log(clientServers)
-  for (let [key, value] of clientServers) {
-    clientServersList.push(key);
+  try {
+    await client.guilds.fetch();
+    const clientServersList = [...client.guilds.cache.keys()];
+    return response.json({ clientServersList });
+  } catch (error) {
+    console.error("Unable to fetch client server list", error);
+    return response.status(500).json({ error: "Unable to fetch server list" });
   }
-  return response.json({ clientServersList });
 }

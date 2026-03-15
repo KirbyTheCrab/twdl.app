@@ -4,8 +4,9 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import SpotifyWebAPI from "spotify-web-api-node";
 import dotenv from "dotenv";
+import discord_pkg from "discord.js"
 import configFile from "../../../../../ds bot/json/config.json" with { type: "json" };
-import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = discord_pkg
 import client from "../../../../../ds bot/main.js";
 dotenv.config();
 

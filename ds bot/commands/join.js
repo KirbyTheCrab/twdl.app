@@ -1,4 +1,5 @@
-import { SlashCommandBuilder } from "discord.js";
+import discord_pkg from "discord.js"
+const { SlashCommandBuilder } = discord_pkg
 
 export const data = new SlashCommandBuilder()
   .setName("join")
@@ -10,7 +11,10 @@ export const data = new SlashCommandBuilder()
   );
 export async function execute(interaction) {
   if (!interaction.isChatInputCommand()) return;
-  let joinCode = await interaction.options.getString("joincode");
+  const joinCode = interaction.options.getString("input");
+  if (!joinCode) {
+    return interaction.reply({ content: "Please provide a join code.", ephemeral: true });
+  }
   const message = joinMessage(joinCode);
   await interaction.reply({ embeds: [message] });
 }
