@@ -442,6 +442,9 @@ export default class Cs2Api {
 
       const itemData = {
         itemName,
+        itemType,
+        itemRarity: rarity,
+        itemExterior: exterior,
         itemColor,
         itemIconStr,
         inspectInGameLink,
