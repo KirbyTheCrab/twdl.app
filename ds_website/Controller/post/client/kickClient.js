@@ -1,4 +1,4 @@
-import client from "../../../../ds bot/main.js";
+import client from "../../../../ds_bot/main.js";
 
 export default async function kickClient(request, response) {
   const serverId = request.session.serverPageId;

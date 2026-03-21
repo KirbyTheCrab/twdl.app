@@ -1,4 +1,4 @@
-import client from "../../../../ds bot/main.js";
+import client from "../../../../ds_bot/main.js";
 import discord_pkg from "discord.js"
 const { EmbedBuilder } = discord_pkg
 import saveToFile from "./saveToFile.js";

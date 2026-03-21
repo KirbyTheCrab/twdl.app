@@ -2,7 +2,7 @@ import fs from "fs-extra";
 
 export default async function getServerPlaylists(request, response) {
     const serverId = request.session.serverPageId;
-    const filePath = "../ds bot/model/spotifyNoti/serverConfigs.json";
+    const filePath = "../ds_bot/model/spotifyNoti/serverConfigs.json";
 
     try {
         const fileContent = await fs.readFile(filePath, "utf-8");

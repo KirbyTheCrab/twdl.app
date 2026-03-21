@@ -66,7 +66,7 @@ discordRoute_POST
     requireGuildAdmin,
     steamSharingConfiguration
   )
-  .post("/tracker/steam/itemPricing", requireGuildAdmin, itemPricing)
+  .post("/tracker/steam/itemPricing", itemPricing)
 
   //spotify routes
   .post("/spotify/buddies-list/add", requireGuildAdmin, addSpotifyBuddies)

@@ -1,4 +1,4 @@
-import client from "../../../../../ds bot/main.js";
+import client from "../../../../../ds_bot/main.js";
 import discord_pkg from "discord.js"
 const { EmbedBuilder } = discord_pkg
 
@@ -8,13 +8,23 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 
 export default async function shareLinkTrade(request, response) {
+  const TRADE_LINK_REGEX = /^https:\/\/steamcommunity\.com\/tradeoffer\/new\/\?partner=\d+&token=[A-Za-z0-9_-]+$/;
   const { tradeLinkValue, channelId } = request.body;
+  if (!TRADE_LINK_REGEX.test(tradeLinkValue)) {
+    return response.status(400).json({ error: "Invalid trade link format" })
+  }
   const userId = request.session.userId;
   const serverId = request.session.serverPageId;
   try {
     const server = await client.guilds.fetch(serverId);
     const member = await server.members.fetch(userId);
     const channel = await server.channels.fetch(channelId);
+    if (!channel) {
+      return response.status(400).json({ error: "CHannel not found in this server" })
+    }
+    if (!channel.isTextBased()) {
+      return response.status(400).json({ error: "Invalid channel type" })
+    }
     const isSaved = await saveTradeLink(tradeLinkValue, member.user.id);
     if (!isSaved.success) {
       return response.json({ error: "An error occurred saving the trade link" })

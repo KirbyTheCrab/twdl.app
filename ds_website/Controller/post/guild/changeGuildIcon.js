@@ -1,4 +1,4 @@
-import client from "../../../../ds bot/main.js";
+import client from "../../../../ds_bot/main.js";
 import fs from "fs";
 export default async function changeGuildIcon(request, response) {
   const serverId = request.session.serverPageId;

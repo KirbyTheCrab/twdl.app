@@ -11,7 +11,7 @@ export default async function removePlaylist(request, response) {
     const __dirname = dirname(__filename);
     let filePath;
     try {
-        filePath = path.join(__dirname, `../../../../../ds bot/model/spotifyNoti/serverConfigs.json`);
+        filePath = path.join(__dirname, `../../../../../ds_bot/model/spotifyNoti/serverConfigs.json`);
     } catch (error) {
         return { success: false, error: "Configuration file not found" };
     }

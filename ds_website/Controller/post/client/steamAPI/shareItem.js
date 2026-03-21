@@ -1,4 +1,4 @@
-import client from "../../../../../ds bot/main.js";
+import client from "../../../../../ds_bot/main.js";
 import discord_pkg from "discord.js"
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = discord_pkg
 
@@ -57,7 +57,7 @@ export default async function shareItem(request, response) {
     const marketUrl = `https://steamcommunity.com/market/listings/730/${encodeURIComponent(marketHashName)}`;
     const inspectUrl = isSafeHttpUrl(itemData.inspectInGameLink)
       ? itemData.inspectInGameLink
-      : `http://localhost:53134/inspect-item?link=${encodeURIComponent(itemData.inspectInGameLink || "")}`;
+      : `${process.env.BASE_URL}/inspect-item?link=${encodeURIComponent(itemData.inspectInGameLink || "")}`;
 
     const embedBuilder = new EmbedBuilder()
       .setColor(itemColor)

@@ -5,9 +5,9 @@ import { fileURLToPath } from "url";
 import SpotifyWebAPI from "spotify-web-api-node";
 import dotenv from "dotenv";
 import discord_pkg from "discord.js"
-import configFile from "../../../../../ds bot/json/config.json" with { type: "json" };
+import configFile from "../../../../../ds_bot/json/config.json" with { type: "json" };
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = discord_pkg
-import client from "../../../../../ds bot/main.js";
+import client from "../../../../../ds_bot/main.js";
 dotenv.config();
 
 export default async function addSpotifyBuddies(request, response) {
@@ -50,7 +50,7 @@ export default async function addSpotifyBuddies(request, response) {
             inviteLink
         };
 
-        //2.save json object to serverConfig.json in ds bot/model folder
+        //2.save json object to serverConfig.json in ds_bot/model folder
         const isSaved = await saveToConfigFile(data, serverId);
         if (!isSaved.success) {
             return response.json({ "error": isSaved.error })
@@ -170,7 +170,7 @@ async function saveToConfigFile(data, serverId) {
     const __dirname = dirname(__filename);
     let filePath;
     try {
-        filePath = path.join(__dirname, `../../../../../ds bot/model/spotifyNoti/serverConfigs.json`);
+        filePath = path.join(__dirname, `../../../../../ds_bot/model/spotifyNoti/serverConfigs.json`);
     } catch (error) {
         return { success: false, error: "Configuration file not found" };
     }

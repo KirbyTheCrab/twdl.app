@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/css/index-style.css">
   <script type="module" src="/js/fetchFooter.js"></script>
   <script type="module" src="/js/themeSettings.js"></script>
+  <script type="module" src="/js/loginUrl.js"></script>
 </head>
 
 <body>
@@ -25,13 +26,12 @@
         <p class="hero-kicker">Discord Automation Hub</p>
         <h1>Run your server like a live control room, not a config maze.</h1>
         <p>
-          TWDL brings moderation, role automation, tracker integrations, and Spotify buddy notifications into one fast dashboard.
+          TWDL brings moderation, role automation, tracker integrations, and Spotify buddy notifications into one fast
+          dashboard.
         </p>
         <div class="hero-actions">
-          <a href="https://discord.com/oauth2/authorize?client_id=1089904140685164686&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A53134%2Fauth%2Fdiscord&scope=identify+guilds+connections+guilds.members.read"
-            class="hero-btn hero-btn-primary">Open Dashboard</a>
-          <a href="https://discord.com/oauth2/authorize?client_id=1089904140685164686&scope=bot&permissions=1099511627775"
-            class="hero-btn hero-btn-secondary">Invite Bot</a>
+          <a id="loginBtn" class="hero-btn hero-btn-primary">Open Dashboard</a>
+          <a id="inviteBtn" class="hero-btn hero-btn-secondary">Invite Bot</a>
         </div>
       </div>
       <div class="hero-panel">

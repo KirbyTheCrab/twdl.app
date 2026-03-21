@@ -44,7 +44,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on("presenceUpdate", async (oldMemeber, newMember) => {
   await getUserDiscordActivity(newMember);
 });
-client.on("ready", getUserDiscordActivity);
+client.on("clientReady", getUserDiscordActivity);
 
 //welcome message loader
 const welcomeMessage = new Map();
@@ -75,7 +75,7 @@ client.on("guildMemberAdd", async (member) => {
   }
 });
 
-client.on("ready", async () => {
+client.on("clientReady", async () => {
   // const commands = await client.application?.commands.fetch();
   // // Log the ID of each global command
   // commands.forEach(command => {

@@ -15,6 +15,7 @@ export default class Cs2Api {
   userShareTradeLink;
   inventoryCache = new Map();
   itemPriceCache = new Map();
+  itemPricePending = new Map();
   constructor() {
     new Tracker("cs2Tracker");
     this.itemExteriorOrder = [
@@ -88,19 +89,19 @@ export default class Cs2Api {
         ".itemShareChannel",
         "itemShareChannel"
       );
-      await this.setupChannelEditing(
+      this.setupChannelEditing(
         this.isShareWithFriendsConfigured,
         "profileSharingChannel",
         "profileSetChannelBtn",
         "#channel"
       );
-      await this.setupChannelEditing(
+      this.setupChannelEditing(
         this.isTradeLinkConfigured,
         "tradeLinkSharingChannel",
         "tradeLinkChannelBtn",
         ".tradeLinkChannel"
       );
-      await this.setupChannelEditing(
+      this.setupChannelEditing(
         this.isCs2ItemSharingConfigured,
         "cs2ItemSharingChannel",
         "cs2ItemChannelBtn",
@@ -127,17 +128,27 @@ export default class Cs2Api {
           this.isTradeLinkConfigured
         );
         if (!this.userShareTradeLink) {
-          const cs2InventoryHeader = document.getElementById("cs2-inventory-header");
-          cs2InventoryHeader.remove();
-        } else if (this.steamUserCs2Inventory && Array.isArray(this.steamUserCs2Inventory.descriptions)) {
-          this.originalItems = [...this.steamUserCs2Inventory.descriptions];
+          const cs2InventoryHeader = document.getElementById("cs2-inventory-header")?.remove();
+        } else if (this.steamUserCs2Inventory && Array.isArray(this.steamUserCs2Inventory.assets)) {
+          const descriptionMap = new Map(
+            this.steamUserCs2Inventory.descriptions.map(desc => [`${desc.classid}_${desc.instanceid}`, desc])
+          );
+          this.originalItems = this.steamUserCs2Inventory.assets
+            .map(asset => {
+              const desc = descriptionMap.get(`${asset.classid}_${asset.instanceid}`);
+              return desc ? { ...desc, assetid: asset.assetid } : null;
+            })
+            .filter(Boolean);
           this.filteredItems = [...this.originalItems];
           this.initializeInventoryControls();
           await this.applyInventoryFilters();
           await this.renderInventory();
         }
       }
-    } finally {
+    } catch (error) {
+      console.error(error)
+    }
+    finally {
       hideLoadingScreen();
     }
   }
@@ -377,17 +388,13 @@ export default class Cs2Api {
       const itemName = item.market_name;
       const itemType = item.type;
       const itemIconStr = item.icon_url;
-      const classid = item.classid;
-      const instanceid = item.instanceid;
-      const assetId = item.assetId;
       const marketHashName = item.market_hash_name;
-      const assetInfo = await this.getAssetInfo(classid, instanceid);
 
       let inspectInGameLink = "";
-      if (item.actions?.[0]?.link && assetInfo?.assetid) {
+      if (item.actions?.[0]?.link && item.assetid) {
         inspectInGameLink = item.actions[0].link
           .replace("%owner_steamid%", this.steamUser.steamAuthUser.id)
-          .replace("%assetid%", assetInfo.assetid);
+          .replace("%assetid%", item.assetid);
       }
 
       const rarity = this.getTagValue(item, "Rarity");
@@ -415,10 +422,6 @@ export default class Cs2Api {
       itemMeta.classList.add("item-meta");
       itemMeta.textContent = `${rarity} • ${exterior}`;
 
-      const itemPriceElement = document.createElement("p");
-      itemPriceElement.classList.add("item-price");
-      itemPriceElement.textContent = "Market price: Loading...";
-
       const shareItemForm = document.createElement("form");
       shareItemForm.classList.add("item-share-form");
 
@@ -433,12 +436,9 @@ export default class Cs2Api {
         itemNameElement,
         itemTypeElement,
         itemMeta,
-        itemPriceElement,
         shareItemForm
       );
       inventoryDiv.appendChild(itemDiv);
-
-      this.populateItemPrice(itemPriceElement, marketHashName);
 
       const itemData = {
         itemName,
@@ -449,9 +449,9 @@ export default class Cs2Api {
         itemIconStr,
         inspectInGameLink,
         marketHashName,
-        assetId,
+        assetId: item.assetid,
       };
-      await this.shareItem(shareItemForm, itemData);
+      this.shareItem(shareItemForm, itemData);
     }
 
     paginationDiv.innerHTML = "";
@@ -534,21 +534,18 @@ export default class Cs2Api {
               response.message || response.error,
               response.message ? "ok" : "error"
             );
-            setTimeout(() => {
-              location.reload();
-            }, 500);
+            if (response.message) {
+              this.userShareTradeLink = tradeLinkValue
+            }
           });
       });
   }
-  async getAssetInfo(classid, instanceid) {
-    return this.steamUserCs2Inventory.assets.find(
-      asset => asset.classid === classid && asset.instanceid === instanceid
-    ) || null;
-  }
-
   extractItemPrice(priceData) {
     if (!priceData || typeof priceData !== "object") {
       return "N/A";
+    }
+    if (priceData.error) {
+      return `Error: ${priceData.error}`;
     }
     return (
       priceData.median_price ||
@@ -565,12 +562,14 @@ export default class Cs2Api {
     priceElement.textContent = `Market price: ${displayPrice}`;
   }
 
-  async shareItem(form, itemData) {
+  shareItem(form, itemData) {
     const channelId = this.isCs2ItemSharingConfigured;
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      console.log(`[shareItem] Fetching price for: ${itemData.marketHashName}`);
       const itemPrice = await this.getItemPricing(itemData.marketHashName);
       itemData.itemPrice = this.extractItemPrice(itemPrice);
+      console.log(`[shareItem] Price result:`, itemPrice, `→ displayed as: ${itemData.itemPrice}`);
       itemData.tradeLink = this.userShareTradeLink;
 
       await fetch("/discord-data/tracker/steam/shareItem", {
@@ -595,7 +594,7 @@ export default class Cs2Api {
    * @param {*} selectClass 
    * @returns 
    */
-  async setupChannelEditing(configuredValue, formId, buttonId, selectClass) {
+  setupChannelEditing(configuredValue, formId, buttonId, selectClass) {
     let isBeingEdited = false;
     if (typeof configuredValue !== "string") return;
 
@@ -682,7 +681,7 @@ export default class Cs2Api {
     return data;
   }
   async fetchUserStatus() {
-    [this.steamUser, this.isMod] = await Promise.all([
+    [this.steamUser, this.isUserMod] = await Promise.all([
       fetch("/session/steamAuthUser").then((res) => res.json()),
       fetch("/session/isMod").then((res) => res.json()),
     ]);
@@ -714,12 +713,13 @@ export default class Cs2Api {
       .then((data) => data);
   }
 
-  //come back to providing a price for items not sure how this will work or if it will work at all
   async getItemPricing(marketHashName) {
     if (this.itemPriceCache.has(marketHashName)) {
+      console.log(`[getItemPricing] Cache hit for: ${marketHashName}`);
       return this.itemPriceCache.get(marketHashName);
     }
 
+    console.log(`[getItemPricing] Fetching from server: ${marketHashName}`);
     const response = await fetch("/discord-data/tracker/steam/itemPricing", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -727,10 +727,12 @@ export default class Cs2Api {
     });
 
     if (!response.ok) {
-      return { median_price: "N/A" };
+      console.error(`[getItemPricing] Server returned ${response.status} for: ${marketHashName}`);
+      return { error: `Server error ${response.status}`, median_price: null };
     }
 
     const data = await response.json();
+    console.log(`[getItemPricing] Response for "${marketHashName}":`, data);
     this.itemPriceCache.set(marketHashName, data);
     return data;
   }

@@ -12,7 +12,6 @@ export function steamAuthReturn(req, res, next) {
     keepSessionInfo: true,
   })(req, res, () => {
     req.session.steamAuthUser = req.user;
-    const isMod = req.session.isMod;
-    res.redirect(`/server/${req.params.serverId}?isMod=${isMod}`);
+    res.redirect(`/server/${req.params.serverId}`);
   });
 }

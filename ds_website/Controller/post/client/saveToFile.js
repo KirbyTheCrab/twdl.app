@@ -11,10 +11,10 @@ import { fileURLToPath } from "url";
 export default async function saveToFile(data, strPath) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
-
+  const safePath = path.normalize(strPath).replace(/^(\.\.(\/|\\|$))+/, "");
   let filePath;
   try {
-    filePath = path.join(__dirname, `../../../Model/${strPath}`);
+    filePath = path.join(__dirname, `../../../Model/${safePath}`);
   } catch (error) {
     console.log(error);
     return;

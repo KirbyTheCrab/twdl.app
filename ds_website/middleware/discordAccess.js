@@ -1,4 +1,4 @@
-import client from "../../ds bot/main.js";
+import client from "../../ds_bot/main.js";
 
 export function requireAuth(request, response, next) {
   if (!request.session?.isLoggedIn) {

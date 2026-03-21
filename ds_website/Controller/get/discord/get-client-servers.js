@@ -1,4 +1,4 @@
-import client from "../../../../ds bot/main.js";
+import client from "../../../../ds_bot/main.js";
 //gives us all the servers that the bot is in in hashmaps
 export default async function getClientServers(request, response) {
   try {
