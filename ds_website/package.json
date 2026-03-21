@@ -28,7 +28,8 @@
     "uuid": "^11.0.5"
   },
   "overrides": {
-    "undici": "^7.0.0"
+    "undici": "^7.0.0",
+    "gopd": "^1.0.1"
   },
   "devDependencies": {
     "@types/express-session": "^1.18.0"
