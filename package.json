@@ -2,6 +2,9 @@
   "name": "twdl-app",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "install:all": "npm install --prefix ds_bot && npm install --prefix ds_website",
     "start": "npm start --prefix ds_website"
