@@ -1,0 +1,7 @@
+[build]
+builder = "nixpacks"
+buildCommand = "cd ds_bot && npm install && cd ../ds_website && npm install"
+
+[deploy]
+startCommand = "cd ds_website && npm start"
+restartPolicyType = "on_failure"
